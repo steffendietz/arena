@@ -8,8 +8,7 @@ Inside the development container perform:
 
 ```
 $ composer install
-$ composer development-enable
-$ ./rr serve -d -v
+$ ./spiral serve -d -v
 ```
 
 Open http://localhost:8080.

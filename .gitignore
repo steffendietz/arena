@@ -1,7 +1,7 @@
-/.phpcs-cache
-/.phpunit.result.cache
-/clover.xml
-/coveralls-upload.json
-/phpunit.xml
-vendor/
-rr
+.idea
+vendor
+runtime
+rr*
+spiral*
+.env
+.phpunit.result.cache
