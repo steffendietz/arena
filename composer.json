@@ -1,19 +1,8 @@
 {
-    "name": "spiral/app",
+    "name": "arena/arena",
+    "description": "Arena",
     "type": "project",
-    "license": "MIT",
-    "description": "Spiral Skeleton Application",
-    "homepage": "https://spiral.dev",
-    "support": {
-        "issues": "https://github.com/spiral/app/issues",
-        "source": "https://github.com/spiral/app"
-    },
-    "authors": [
-        {
-            "name": "Wolfy-J",
-            "email": "wolfy.jd@gmail.com"
-        }
-    ],
+    "license": "proprietary",
     "require": {
         "php": ">=7.2",
         "ext-mbstring": "*",
@@ -55,10 +44,7 @@
         }
     },
     "extra": {
-        "publish-cmd": "php app.php publish",
-        "branch-alias": {
-            "dev-master": "1.2.x-dev"
-        }
+        "publish-cmd": "php app.php publish"
     },
     "config": {
         "sort-packages": true
