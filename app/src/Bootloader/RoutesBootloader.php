@@ -29,25 +29,33 @@ class RoutesBootloader extends Bootloader
      */
     public function boot(RouterInterface $router): void
     {
-        // named route
-        $router->setRoute(
-            'html',
-            new Route('/<action>.html', new Controller(HomeController::class))
-        );
-
-        $characterRoute = new Route(
-            '/character[/<action>[/<name>]]', 
-            new Controller(CharacterController::class));
-        
-        $characterRoute->withDefaults([
-            'action' => 'generate',
-            'name' => 'HelloWorldCharacter'
-
-        ]);
-        $router->setRoute('character', $characterRoute);
+        // named routes
+        $router->setRoute('html', $this->homeRoute());
+        $router->setRoute('character', $this->characterRoute());
 
         // fallback (default) route
         $router->setDefault($this->defaultRoute());
+    }
+
+    protected function homeRoute(): RouteInterface
+    {
+        return new Route(
+            '/<action>.html',
+            new Controller(HomeController::class)
+        );
+    }
+
+    protected function characterRoute(): RouteInterface
+    {
+        $characterRoute = new Route(
+            '/character[/<action>[/<name>]]',
+            new Controller(CharacterController::class)
+        );
+
+        return $characterRoute->withDefaults([
+            'action' => 'generate',
+            'name' => 'HelloWorldCharacter'
+        ]);
     }
 
     /**
