@@ -1,9 +1,5 @@
 <?php
-/**
- * {project-name}
- * 
- * @author {author-name}
- */
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -13,12 +9,12 @@ use Cycle\ORM\TransactionInterface;
 
 class CharacterController
 {
+
     protected $tr;
-        
+
     public function __construct(TransactionInterface $tr)
     {
         $this->tr = $tr;
-
     }
 
     public function generate(string $name)
@@ -31,5 +27,4 @@ class CharacterController
 
         return sprintf('Generated %s %s', $character->getId(), $character->getName());
     }
-
 }
