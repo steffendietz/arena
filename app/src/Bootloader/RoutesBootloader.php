@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace App\Bootloader;
 
+use App\Controller\CharacterController;
 use App\Controller\HomeController;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Router\Route;
@@ -33,6 +34,17 @@ class RoutesBootloader extends Bootloader
             'html',
             new Route('/<action>.html', new Controller(HomeController::class))
         );
+
+        $characterRoute = new Route(
+            '/character[/<action>[/<name>]]', 
+            new Controller(CharacterController::class));
+        
+        $characterRoute->withDefaults([
+            'action' => 'generate',
+            'name' => 'HelloWorldCharacter'
+
+        ]);
+        $router->setRoute('character', $characterRoute);
 
         // fallback (default) route
         $router->setDefault($this->defaultRoute());
