@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Bootloader;
+use App\Bootloader\UserBootloader;
 use Spiral\Bootloader as Framework;
 use Spiral\DotEnv\Bootloader as DotEnv;
 use Spiral\Framework\Kernel;
@@ -55,6 +56,9 @@ class App extends Kernel
         Framework\Http\CsrfBootloader::class,
         Framework\Http\PaginationBootloader::class,
 
+        Framework\Auth\HttpAuthBootloader::class,
+        Framework\Auth\TokenStorage\CycleTokensBootloader::class,
+
         // Databases
         Framework\Database\DatabaseBootloader::class,
         Framework\Database\MigrationsBootloader::class,
@@ -90,6 +94,7 @@ class App extends Kernel
     protected const APP = [
         Bootloader\LocaleSelectorBootloader::class,
         Bootloader\RoutesBootloader::class,
+        UserBootloader::class,
 
         // fast code prototyping
         Prototype\PrototypeBootloader::class,

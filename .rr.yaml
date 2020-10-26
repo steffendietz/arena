@@ -1,9 +1,11 @@
 # http service configuration.
 http:
   address: 0.0.0.0:8080
-
+  
   workers:
     command: "php app.php"
+    relay: "unix://http-workers.unix"
+    pool.numWorkers: 1
 
 # queue and jobs
 jobs:
@@ -16,7 +18,8 @@ jobs:
 
   workers:
     command: "php app.php"
-    pool.numWorkers: 2
+    relay: "unix://job-workers.unix"
+    pool.numWorkers: 1
 
 # serve static files
 static:

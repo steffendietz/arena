@@ -10,4 +10,6 @@ return [
     'Welcome to the Arena'         => 'Willkommen in der Arena',
     'This view file is located in' => 'Diese Datei liegt in',
     'and rendered by'              => 'und wird dargestellt von',
+    'Login'                        => 'Anmeldung',
+    'Submit'                       => 'Abschicken',
 ];
