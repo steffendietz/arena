@@ -5,6 +5,10 @@
     <link rel="stylesheet" href="/styles/welcome.css" />
 </stack:push>
 
+<stack:push name="scripts">
+    <script src="/scripts/main.js"></script>
+</stack:push>
+
 <define:body>
     <div class="wrapper">
         <div class="placeholder">

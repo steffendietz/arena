@@ -1,5 +1,6 @@
 .idea
 vendor
+node_modules
 runtime
 rr*
 spiral*

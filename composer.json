@@ -11,6 +11,7 @@
         "cycle/orm": "^1.0",
         "cycle/proxy-factory": "^1.0",
         "ramsey/uuid": "^4.1",
+        "spiral/broadcast": "^2.0",
         "spiral/database": "^2.3",
         "spiral/dotenv-bridge": "^1.0",
         "spiral/framework": "^2.6",
