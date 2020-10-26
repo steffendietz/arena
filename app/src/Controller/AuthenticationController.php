@@ -1,9 +1,5 @@
 <?php
-/**
- * {project-name}
- * 
- * @author {author-name}
- */
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -40,7 +36,7 @@ class AuthenticationController
                 'errors' => $login->getErrors()
             ];
         }
-    
+
         // application specific login logic
         $user = $this->users->findOne(['username' => $login->getField('username')]);
         if (
@@ -69,7 +65,7 @@ class AuthenticationController
         if ($this->auth->getActor() === null) {
             throw new ForbiddenException();
         }
-    
+
         dump($this->auth->getActor());
     }
 

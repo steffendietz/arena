@@ -8,7 +8,7 @@ use Cycle\ORM\Select\Repository;
 use Spiral\Auth\ActorProviderInterface;
 use Spiral\Auth\TokenInterface;
 
-class UserRepository extends Repository implements ActorProviderInterface 
+class UserRepository extends Repository implements ActorProviderInterface
 {
     public function getActor(TokenInterface $token): ?object
     {
