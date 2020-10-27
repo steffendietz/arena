@@ -11,7 +11,7 @@ module.exports = {
     contentBase: '../public',
     publicPath: '/scripts',
     hot: true,
-    port: 9000,
+    port: 8181,
     proxy: {
       context: () => true,
       target: 'http://localhost:8080'
