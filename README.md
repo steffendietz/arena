@@ -8,7 +8,10 @@ Inside the development container perform:
 
 ```
 $ composer install
+$ php app.php cycle:sync
 $ ./spiral serve -d -v
+$ npm i --prefix ./frontend
+$ npm run --prefix ./frontend start
 ```
 
-Open http://localhost:8080.
+Open http://localhost:8181.
