@@ -14,7 +14,8 @@ module.exports = {
     port: 8181,
     proxy: {
       context: () => true,
-      target: 'http://localhost:8080'
+      target: 'http://localhost:8080',
+      changeOrigin: true
     }
   },
 };

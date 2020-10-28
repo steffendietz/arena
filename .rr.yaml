@@ -11,7 +11,7 @@ broadcast:
   enabled: true
 
 ws:
-  enabled: true
+  noOrigin: true
   path: "/ws"
 
 # queue and jobs
