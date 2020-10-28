@@ -10,11 +10,9 @@ use Spiral\Bootloader\Auth\AuthBootloader;
 
 class UserBootloader extends Bootloader
 {
-    protected const BINDINGS = [];
-
-    protected const SINGLETONS = [];
-
-    protected const DEPENDENCIES = [];
+    protected const DEPENDENCIES = [
+        AuthBootloader::class
+    ];
 
     public function boot(AuthBootloader $auth): void
     {

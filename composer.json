@@ -31,8 +31,7 @@
         "post-install-cmd": [
             "php -r \"copy('.env.sample', '.env');\"",
             "php app.php encrypt:key -m .env",
-            "php app.php configure -vv",
-            "spiral get-binary"
+            "php app.php configure -vv"
         ]
     },
     "autoload": {

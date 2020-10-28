@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Bootloader;
+use App\Bootloader\TopicsBootloader;
 use App\Bootloader\UserBootloader;
 use Spiral\Bootloader as Framework;
 use Spiral\DotEnv\Bootloader as DotEnv;
@@ -96,6 +97,7 @@ class App extends Kernel
         Bootloader\LocaleSelectorBootloader::class,
         Bootloader\RoutesBootloader::class,
         UserBootloader::class,
+        TopicsBootloader::class,
 
         // fast code prototyping
         Prototype\PrototypeBootloader::class,
