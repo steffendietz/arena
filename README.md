@@ -8,9 +8,9 @@ Inside the development container perform:
 
 ```
 $ composer install
-$ php app.php cycle:sync
-$ ./spiral serve -d -v
 $ npm i --prefix ./frontend
+$ ./app.php cycle:sync
+$ ./spiral serve -d -v
 $ npm run --prefix ./frontend start
 ```
 

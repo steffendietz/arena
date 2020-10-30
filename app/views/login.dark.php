@@ -11,13 +11,13 @@
             <img src="/images/logo.svg" alt="Framework Logotype" width="200px" />
             <h2>[[Welcome to the Arena]]</h2>
 
-            <homepage:links git="https://github.com/spiral/app" style="font-weight: bold;" />
+            <homepage:links />
 
             <h3>[[Login]]</h3>
             <div style="font-size: 12px; margin-top: 10px;">
                 <form action="/authentication/login" method="post">
-                    <input name="username" type="text" placeholder="Username" />
-                    <input name="password" type="text" placeholder="Password" />
+                    <input name="username" type="text" placeholder="[[Username]]" />
+                    <input name="password" type="password" placeholder="[[Password]]" />
                     <input type="submit" value="[[Submit]]" />
                 </form>
             </div>

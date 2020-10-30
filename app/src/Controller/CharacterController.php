@@ -6,9 +6,11 @@ namespace App\Controller;
 
 use App\Database\Character;
 use Cycle\ORM\TransactionInterface;
+use Spiral\Prototype\Traits\PrototypeTrait;
 
 class CharacterController
 {
+    use PrototypeTrait;
 
     protected $tr;
 
@@ -26,5 +28,14 @@ class CharacterController
         $this->tr->run();
 
         return sprintf('Generated %s %s', $character->getId(), $character->getName());
+    }
+
+    public function list()
+    {
+        $characterRepo = $this->orm->getRepository(Character::class);
+
+        return $this->views->render('character/list.dark.php', [
+            'characters' => $characterRepo->findAll()
+        ]);
     }
 }
