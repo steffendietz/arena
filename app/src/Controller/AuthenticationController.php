@@ -54,10 +54,7 @@ class AuthenticationController
             $this->authTokens->create(['userID' => $user->id])
         );
 
-        return [
-            'status' => 200,
-            'message' => 'Authenticated'
-        ];
+        return $this->response->redirect('/');
     }
 
     public function checkAuthenticated()
@@ -72,5 +69,6 @@ class AuthenticationController
     public function logout()
     {
         $this->auth->close();
+        return $this->response->redirect('/');
     }
 }

@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Bootloader;
+use App\Bootloader\DirectiveBootloader;
 use App\Bootloader\TopicsBootloader;
 use App\Bootloader\UserBootloader;
 use Spiral\Bootloader as Framework;
@@ -98,6 +99,7 @@ class App extends Kernel
         Bootloader\RoutesBootloader::class,
         UserBootloader::class,
         TopicsBootloader::class,
+        DirectiveBootloader::class,
 
         // fast code prototyping
         Prototype\PrototypeBootloader::class,
