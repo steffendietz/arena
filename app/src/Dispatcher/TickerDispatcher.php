@@ -52,6 +52,8 @@ class TickerDispatcher implements DispatcherInterface
                 ]) . PHP_EOL,
                 FILE_APPEND
             );
+            // simulate long running task
+            sleep(10);
 
             $worker->send("OK");
 
