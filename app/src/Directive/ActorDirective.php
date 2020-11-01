@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Directive;
 
-use App\Database\User;
 use Spiral\Prototype\Traits\PrototypeTrait;
 use Spiral\Stempler\Directive\AbstractDirective;
 use Spiral\Stempler\Node\Dynamic\Directive;

@@ -6,6 +6,8 @@ ARG NODE_VERSION="lts/*"
 FROM golang:1.15-alpine AS spiralbuilder
 WORKDIR /go/src/github.com/steffendietz/arena/
 COPY main.go go.mod go.sum ./
+COPY composite_packages/ ./composite_packages/
+
 # creating cachable layer of downloaded modules
 RUN go mod download
 # compile statically
