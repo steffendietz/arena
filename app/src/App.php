@@ -13,6 +13,7 @@ namespace App;
 
 use App\Bootloader;
 use App\Bootloader\DirectiveBootloader;
+use App\Bootloader\TickerBootloader;
 use App\Bootloader\TopicsBootloader;
 use App\Bootloader\UserBootloader;
 use Spiral\Bootloader as Framework;
@@ -77,6 +78,7 @@ class App extends Kernel
 
         // Additional dispatchers
         Framework\Jobs\JobsBootloader::class,
+        TickerBootloader::class,
 
         // Extensions and bridges
         Stempler\StemplerBootloader::class,

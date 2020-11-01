@@ -2,6 +2,8 @@ module github.com/steffendietz/arena
 
 go 1.15
 
+replace github.com/steffendietz/rr-ticker => ./composite_packages/ticker
+
 require (
 	github.com/aws/aws-sdk-go v1.35.16 // indirect
 	github.com/beanstalkd/go-beanstalk v0.1.0 // indirect

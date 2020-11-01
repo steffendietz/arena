@@ -30,6 +30,7 @@ import (
 	"github.com/spiral/broadcast-ws"
 	"github.com/spiral/jobs/v2"
 	"github.com/spiral/php-grpc"
+	"github.com/steffendietz/rr-ticker"
 	"github.com/spiral/roadrunner/service/env"
 	"github.com/spiral/roadrunner/service/headers"
 	"github.com/spiral/roadrunner/service/health"
@@ -73,6 +74,8 @@ func main() {
 			"sqs":       &sqs.Broker{},
 		},
 	})
+
+	rr.Container.Register(ticker.ID, &ticker.Service{})
 
 	// pub-sub
 	rr.Container.Register(broadcast.ID, &broadcast.Service{})

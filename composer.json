@@ -4,7 +4,7 @@
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": ">=7.2",
+        "php": "^7.4",
         "ext-mbstring": "*",
         "cycle/annotated": "^2.0",
         "cycle/migrations": "^1.0",
