@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Database;
 
+use Cycle\Annotated\Annotation\Relation\HasOne;
 use Cycle\Annotated\Annotation as Cycle;
 
 /**
@@ -16,6 +17,9 @@ class Character
 
     /** @Cycle\Column(type = "string(32)") */
     protected $name;
+
+    /** @HasOne(target = "MatchSearch") */
+    protected $matchSearch;
 
     public function setName(string $name)
     {
