@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use App\Database\User;
+use App\Repository\UserRepository;
 use App\Request\LoginRequest;
 use Cycle\ORM\Transaction;
 use Spiral\Http\Exception\ClientException\ForbiddenException;
@@ -14,6 +15,9 @@ class AuthenticationController
 {
     use PrototypeTrait;
 
+    /**
+     * @var UserRepository
+     */
     protected $users;
 
     public function __construct()
@@ -37,7 +41,7 @@ class AuthenticationController
             ];
         }
 
-        // application specific login logic
+        /** @var User $user */
         $user = $this->users->findOne(['username' => $login->getField('username')]);
         if (
             $user === null
@@ -51,7 +55,7 @@ class AuthenticationController
 
         //create token
         $this->auth->start(
-            $this->authTokens->create(['userID' => $user->id])
+            $this->authTokens->create(['userID' => $user->getUuid()])
         );
 
         return $this->response->redirect('/');

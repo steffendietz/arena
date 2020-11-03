@@ -15,10 +15,10 @@ use DateTimeImmutable;
 class MatchSearch
 {
 
-    /** @Cycle\Column(type="primary") */
+    /** @Cycle\Column(type = "primary") */
     protected $id;
 
-    /** @Cycle\Column(type="datetime") */
+    /** @Cycle\Column(type = "datetime") */
     protected $started;
 
     /** @BelongsTo(target = "Character", inverse = @Inverse(as = "matchSearch", type = "hasOne")) */
