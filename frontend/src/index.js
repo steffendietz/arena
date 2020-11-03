@@ -15,6 +15,16 @@ channel.subscribe(NamesDict.MESSAGE, (e) => {
         console.log('channel left');
     }
 });
+if(userUuid !== null) {
+    const userChannel = ws.joinChannel('channel.' + userUuid);
+    userChannel.subscribe(NamesDict.MESSAGE, (e) => {
+        console.log(e.data);
+        if (e.data === 'leave') {
+            userChannel.leave();
+            console.log('userChannel left');
+        }
+    });
+}
 
 var specialTestFunction = function (bla) {
     var blubb = bla || 'Hello World!';

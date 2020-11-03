@@ -13,7 +13,10 @@
     <div class="wrapper">
         <div class="placeholder">
             <img src="/images/logo.svg" alt="Framework Logotype" width="200px" />
-            <h2>[[Welcome to the Arena]] (@actor)</h2>
+            <h2>[[Welcome to the Arena]] (@actor) (@actorUuid)</h2>
+            <script>
+            var userUuid = @actorUuidJs;
+            </script>
 
             <homepage:links />
 
