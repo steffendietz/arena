@@ -58,10 +58,9 @@ class App extends Kernel
         Framework\Http\SessionBootloader::class,
         Framework\Http\CsrfBootloader::class,
         Framework\Http\PaginationBootloader::class,
-        Framework\Http\WebsocketsBootloader::class,
-
         Framework\Auth\HttpAuthBootloader::class,
         Framework\Auth\TokenStorage\CycleTokensBootloader::class,
+        Framework\Http\WebsocketsBootloader::class,
 
         // Databases
         Framework\Database\DatabaseBootloader::class,

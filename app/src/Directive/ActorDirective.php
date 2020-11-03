@@ -21,4 +21,14 @@ class ActorDirective extends AbstractDirective
     {
         return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor() !== null ? $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()->name : "GUEST" ?>';
     }
+
+    public function renderActorUuid(Directive $directice)
+    {
+        return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor() !== null ? $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()->getUuid() : null ?>';
+    }
+
+    public function renderActorUuidJs(Directive $directice)
+    {
+        return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor() !== null ? \'\\\'\' . $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()->getUuid() . \'\\\'\'  : \'null\' ?>';
+    }
 }
