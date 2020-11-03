@@ -47,9 +47,4 @@ class Character
     {
         return $this->name;
     }
-
-    public function getId()
-    {
-        return $this->id;
-    }
 }

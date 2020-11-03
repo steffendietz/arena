@@ -9,7 +9,20 @@
 </head>
 
 <body>
-    <block:body />
+    <div class="wrapper">
+        <div class="placeholder">
+            <img src="/images/logo.svg" alt="Framework Logotype" width="200px" />
+            <h2>[[Welcome to the Arena]] (@actor) (@actorUuid)</h2>
+            <script>
+                var userUuid = @actorUuidJs;
+            </script>
+
+            <use:element path="embed/links" as="homepage:links" />
+            <homepage:links />
+
+            <block:body />
+        </div>
+    </div>
     <stack:collect name="scripts" level="1" />
 </body>
 <hidden>${context}</hidden>
