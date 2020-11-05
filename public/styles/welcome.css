@@ -21,6 +21,11 @@ body {
     width: 50%;
 }
 
+.inner-wrapper {
+    margin-top: 40px;
+    text-align: left;
+}
+
 a {
     color: #5fa4ea;
 }

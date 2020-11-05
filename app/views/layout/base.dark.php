@@ -19,7 +19,9 @@
             <use:element path="embed/links" as="homepage:links" />
             <homepage:links />
 
-            <block:body />
+            <div class="inner-wrapper">
+                <block:body />
+            </div>
         </div>
     </div>
     <stack:collect name="scripts" level="1" />
