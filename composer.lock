@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2dc349fdb1f0ee1a05910eea3b6cbd0e",
+    "content-hash": "3f4dfb6ee0fb4b0182c6ca3e3212cbab",
     "packages": [
         {
             "name": "brick/math",
@@ -411,16 +411,16 @@
         },
         {
             "name": "cycle/orm",
-            "version": "v1.2.13",
+            "version": "v1.2.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cycle/orm.git",
-                "reference": "bf7d159ba629047a33038ab39c6dc0af16a1c415"
+                "reference": "ef8e28fde4e24a78d1c868360aa8d1c4d38b0d5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cycle/orm/zipball/bf7d159ba629047a33038ab39c6dc0af16a1c415",
-                "reference": "bf7d159ba629047a33038ab39c6dc0af16a1c415",
+                "url": "https://api.github.com/repos/cycle/orm/zipball/ef8e28fde4e24a78d1c868360aa8d1c4d38b0d5c",
+                "reference": "ef8e28fde4e24a78d1c868360aa8d1c4d38b0d5c",
                 "shasum": ""
             },
             "require": {
@@ -453,9 +453,9 @@
             "description": "PHP DataMapper ORM and Data Modelling Engine",
             "support": {
                 "issues": "https://github.com/cycle/orm/issues",
-                "source": "https://github.com/cycle/orm/tree/v1.2.13"
+                "source": "https://github.com/cycle/orm/tree/v1.2.15"
             },
-            "time": "2020-10-23T08:11:46+00:00"
+            "time": "2020-11-02T10:33:48+00:00"
         },
         {
             "name": "cycle/proxy-factory",
@@ -6971,7 +6971,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2",
+        "php": "^7.4",
         "ext-mbstring": "*"
     },
     "platform-dev": [],
