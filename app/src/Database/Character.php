@@ -11,7 +11,7 @@ use Cycle\Annotated\Annotation as Cycle;
 
 /**
  * @Cycle\Entity(
- *     mapper="Mapper\UuidMapper"
+ *     mapper = "Mapper\UuidMapper"
  * )
  */
 class Character
@@ -46,6 +46,11 @@ class Character
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
     public function isMatchSearching(): bool

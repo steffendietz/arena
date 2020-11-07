@@ -47,11 +47,11 @@ class CharacterController
         $characterRepo = $this->orm->getRepository(Character::class);
 
         $characters = $characterRepo
-        ->select()
-        ->load('matchSearch')
-        ->with('user')
-        ->where('user.uuid', $user->getUuid())
-        ->fetchAll();
+            ->select()
+            ->load('matchSearch')
+            ->with('user')
+            ->where('user.uuid', $user->getUuid())
+            ->fetchAll();
 
         return $this->views->render('character/list.dark.php', [
             'characters' => $characters
