@@ -8,7 +8,7 @@ http:
 
 # ticker
 ticker:
-  interval: 1
+  interval: 5
   workers.command: "php app.php"
 
 # broadcast

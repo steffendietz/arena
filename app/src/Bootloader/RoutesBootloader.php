@@ -31,7 +31,8 @@ class RoutesBootloader extends Bootloader
     {
         // named routes
         $router->setRoute('html', $this->homeRoute());
-        $router->setRoute('character', $this->characterRoute());
+        $router->setRoute('character', $this->characterGenerateRoute());
+        $router->setRoute('searchmatch', $this->characterSearchMathRoute());
 
         // fallback (default) route
         $router->setDefault($this->defaultRoute());
@@ -45,14 +46,26 @@ class RoutesBootloader extends Bootloader
         );
     }
 
-    protected function characterRoute(): RouteInterface
+    protected function characterSearchMathRoute(): RouteInterface
     {
-        $characterRoute = new Route(
-            '/character[/<action>[/<name>]]',
+        $characterGenerateRoute = new Route(
+            '/character/search-match/<characterUuid>',
             new Controller(CharacterController::class)
         );
 
-        return $characterRoute->withDefaults([
+        return $characterGenerateRoute->withDefaults([
+            'action' => 'toggleMatchSearch'
+        ]);
+    }
+
+    protected function characterGenerateRoute(): RouteInterface
+    {
+        $characterGenerateRoute = new Route(
+            '/character/generate[/<name>]',
+            new Controller(CharacterController::class)
+        );
+
+        return $characterGenerateRoute->withDefaults([
             'action' => 'generate',
             'name' => 'HelloWorldCharacter'
         ]);

@@ -10,7 +10,9 @@ use Cycle\Annotated\Annotation as Cycle;
 use DateTimeImmutable;
 
 /**
- * @Cycle\Entity()
+ * @Cycle\Entity(
+ *     repository = "App\Repository\MatchSearchRepository"
+ * )
  */
 class MatchSearch
 {
@@ -28,5 +30,10 @@ class MatchSearch
     {
         $this->started = new DateTimeImmutable();
         $this->character = $character;
+    }
+
+    public function getCharacter(): Character
+    {
+        return $this->character;
     }
 }

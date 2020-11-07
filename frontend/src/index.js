@@ -7,14 +7,6 @@ const ws = new SFSocket(socketOptions);
 
 SFSocket.ready();
 
-const channel = ws.joinChannel('channel');
-channel.subscribe(NamesDict.MESSAGE, (e) => {
-    console.log(e.data);
-    if (e.data === 'leave') {
-        channel.leave();
-        console.log('channel left');
-    }
-});
 if(userUuid !== null) {
     const userChannel = ws.joinChannel('channel.' + userUuid);
     userChannel.subscribe(NamesDict.MESSAGE, (e) => {
@@ -25,13 +17,6 @@ if(userUuid !== null) {
         }
     });
 }
-
-var specialTestFunction = function (bla) {
-    var blubb = bla || 'Hello World!';
-    console.log(blubb);
-};
-
-specialTestFunction();
 
 if (module.hot) {
     module.hot.accept()

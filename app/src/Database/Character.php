@@ -11,7 +11,7 @@ use Cycle\Annotated\Annotation as Cycle;
 
 /**
  * @Cycle\Entity(
- *     mapper="Mapper\UuidMapper"
+ *     mapper = "Mapper\UuidMapper"
  * )
  */
 class Character
@@ -22,7 +22,7 @@ class Character
     /** @Cycle\Column(type = "string(32)") */
     protected $name;
 
-    /** @HasOne(target = "MatchSearch") */
+    /** @HasOne(target = "MatchSearch", load = "eager") */
     protected $matchSearch;
 
     /** @BelongsTo(target = "User", inverse = @Inverse(as = "characters", type = "hasMany")) */
@@ -46,5 +46,25 @@ class Character
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function isMatchSearching(): bool
+    {
+        return $this->matchSearch !== null;
+    }
+
+    public function setMatchSearch(MatchSearch $matchSearch)
+    {
+        $this->matchSearch = $matchSearch;
+    }
+
+    public function getMatchSearch(): ?MatchSearch
+    {
+        return $this->matchSearch;
     }
 }
