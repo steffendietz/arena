@@ -21,22 +21,25 @@ class TickerDispatcher implements DispatcherInterface
 
     const CHARACTERS_NEEDED_FOR_MATCH = 3;
 
+    private ORMInterface $orm;
     private TransactionInterface $tr;
-
     private EnvironmentInterface $env;
-
+    private BroadcastInterface $broadcast;
     private FinalizerInterface $finalizer;
-
     private ContainerInterface $container;
 
     public function __construct(
+        ORMInterface $orm,
         TransactionInterface $tr,
         EnvironmentInterface $env,
+        BroadcastInterface $broadcast,
         FinalizerInterface $finalizer,
         ContainerInterface $container
     ) {
         $this->tr = $tr;
+        $this->orm = $orm;
         $this->env = $env;
+        $this->broadcast = $broadcast;
         $this->finalizer = $finalizer;
         $this->container = $container;
     }
@@ -51,14 +54,8 @@ class TickerDispatcher implements DispatcherInterface
         /** @var Worker $worker */
         $worker = $this->container->get(Worker::class);
 
-        /** @var BroadcastInterface $broadcast */
-        $broadcast = $this->container->get(BroadcastInterface::class);
-
-        /** @var ORMInterface $orm */
-        $orm = $this->container->get(ORMInterface::class);
-
         /** @var MatchSearchRepository $matchSearchRepository */
-        $matchSearchRepository = $orm->getRepository(MatchSearch::class);
+        $matchSearchRepository = $this->orm->getRepository(MatchSearch::class);
 
         while (($body = $worker->receive($ctx)) !== null) {
             $lastTick = json_decode($ctx)->lastTick;
@@ -67,25 +64,27 @@ class TickerDispatcher implements DispatcherInterface
             // do matchmaking
             file_put_contents('match-search.txt', 'MatchSearch ' . $numTick . PHP_EOL, FILE_APPEND);
             $matchSearches = $matchSearchRepository->findOldestMatchSearches();
-            $matchCount = count($matchSearches);
-            if ($matchCount >= static::CHARACTERS_NEEDED_FOR_MATCH) {
-                foreach ($matchSearches as $matchSearch) {
-                    $character = $matchSearch->getCharacter();
+            foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunkIndex => $chunk) {
+                $matchCount = count($chunk);
+                if ($matchCount >= static::CHARACTERS_NEEDED_FOR_MATCH) {
+                    foreach ($chunk as $matchSearch) {
+                        $character = $matchSearch->getCharacter();
 
-                    $characterName = $character->getName();
-                    $characterUuid = $character->getUuid();
+                        $characterName = $character->getName();
+                        $characterUuid = $character->getUuid();
 
-                    $userUuid = $character->getUser()->getUuid();
-                    $broadcast->publish(new Message('channel.' . $userUuid, sprintf('Match found for Character %s (%s)!', $characterName, $characterUuid)));
+                        $userUuid = $character->getUser()->getUuid();
+                        $this->broadcast->publish(new Message('channel.' . $userUuid, sprintf('Match ' . $chunkIndex . ' found for Character %s (%s)!', $characterName, $characterUuid)));
 
-                    $this->tr->delete($matchSearch);
-                }
-                $this->tr->run();
-            } else {
-                file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
-                foreach ($matchSearches as $matchSearch) {
-                    $userUuid = $matchSearch->getCharacter()->getUser()->getUuid();
-                    $broadcast->publish(new Message('channel.' . $userUuid, 'Still searching!'));
+                        $this->tr->delete($matchSearch);
+                    }
+                    $this->tr->run();
+                } else {
+                    file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
+                    foreach ($chunk as $matchSearch) {
+                        $userUuid = $matchSearch->getCharacter()->getUser()->getUuid();
+                        $this->broadcast->publish(new Message('channel.' . $userUuid, 'Still searching!'));
+                    }
                 }
             }
 

@@ -85,6 +85,8 @@ class CharacterController
             $this->tr->run();
         }
 
-        return $this->response->redirect('character:list');
+        $response = $this->response->redirect('character:list');
+        $response->withAddedHeader('Cache-Control', 'no-store');
+        return $response;
     }
 }
