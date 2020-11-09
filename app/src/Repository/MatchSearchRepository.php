@@ -16,7 +16,7 @@ class MatchSearchRepository extends Repository
     {
         return $this->select()
             ->load('character.user')
-            ->orderBy('started', 'DESC')
+            ->orderBy('started')
             ->limit($limit)
             ->fetchAll();
     }

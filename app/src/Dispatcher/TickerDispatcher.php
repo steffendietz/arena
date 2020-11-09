@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dispatcher;
 
+use App\Database\Arena;
 use App\Database\MatchSearch;
 use App\Repository\MatchSearchRepository;
 use Cycle\ORM\ORMInterface;
@@ -63,12 +64,17 @@ class TickerDispatcher implements DispatcherInterface
 
             // do matchmaking
             file_put_contents('match-search.txt', 'MatchSearch ' . $numTick . PHP_EOL, FILE_APPEND);
-            $matchSearches = $matchSearchRepository->findOldestMatchSearches();
+            $matchSearches = $matchSearchRepository->findOldestMatchSearches(10 * static::CHARACTERS_NEEDED_FOR_MATCH);
             foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunkIndex => $chunk) {
                 $matchCount = count($chunk);
                 if ($matchCount >= static::CHARACTERS_NEEDED_FOR_MATCH) {
+                    // create match
+                    $arena = new Arena();
                     foreach ($chunk as $matchSearch) {
                         $character = $matchSearch->getCharacter();
+
+                        // add character to match
+                        $arena->getCharacters()->add($character);
 
                         $characterName = $character->getName();
                         $characterUuid = $character->getUuid();
@@ -78,6 +84,7 @@ class TickerDispatcher implements DispatcherInterface
 
                         $this->tr->delete($matchSearch);
                     }
+                    $this->tr->persist($arena);
                     $this->tr->run();
                 } else {
                     file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
