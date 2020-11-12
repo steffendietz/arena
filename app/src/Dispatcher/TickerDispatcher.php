@@ -6,6 +6,8 @@ namespace App\Dispatcher;
 
 use App\Database\Arena;
 use App\Database\MatchSearch;
+use App\Database\User;
+use App\Repository\ArenaRepository;
 use App\Repository\MatchSearchRepository;
 use Cycle\ORM\ORMInterface;
 use Cycle\ORM\TransactionInterface;
@@ -74,13 +76,12 @@ class TickerDispatcher implements DispatcherInterface
                         $character = $matchSearch->getCharacter();
 
                         // add character to match
-                        $arena->getCharacters()->add($character);
+                        $arena->addCharacter($character);
 
                         $characterName = $character->getName();
                         $characterUuid = $character->getUuid();
 
-                        $userUuid = $character->getUser()->getUuid();
-                        $this->broadcast->publish(new Message('channel.' . $userUuid, sprintf('Match ' . $chunkIndex . ' found for Character %s (%s)!', $characterName, $characterUuid)));
+                        $this->sendToUser($character->getUser(), sprintf('Match ' . $chunkIndex . ' found for Character %s (%s)!', $characterName, $characterUuid));
 
                         $this->tr->delete($matchSearch);
                     }
@@ -89,18 +90,36 @@ class TickerDispatcher implements DispatcherInterface
                 } else {
                     file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
                     foreach ($chunk as $matchSearch) {
-                        $userUuid = $matchSearch->getCharacter()->getUser()->getUuid();
-                        $this->broadcast->publish(new Message('channel.' . $userUuid, 'Still searching!'));
+                        $this->sendToUser($matchSearch->getCharacter()->getUser(), 'Still searching!');
                     }
                 }
             }
 
             // do match handling
+            /** @var ArenaRepository $arenaRepository */
+            $arenaRepository = $this->orm->getRepository(Arena::class);
+
+            foreach ($arenaRepository->findActiveArenas(5) as $arena) {
+                foreach ($arena->getCharacters() as $character) {
+                    $character->setCurrentArena(null);
+                    $this->sendToUser($character->getUser(), 'Fighting.');
+                }
+                $arena->setActive(false);
+            }
+            $this->tr->run();
 
             $worker->send("OK");
 
             // reset some stateful services
             $this->finalizer->finalize();
         }
+    }
+
+    private function sendToUser(User $user, string $message)
+    {
+        $this->broadcast->publish(new Message(
+            'channel.' . $user->getUuid(),
+            $message
+        ));
     }
 }
