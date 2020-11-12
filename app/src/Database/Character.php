@@ -6,6 +6,7 @@ namespace App\Database;
 
 use Cycle\Annotated\Annotation\Relation\Inverse;
 use Cycle\Annotated\Annotation\Relation\BelongsTo;
+use Cycle\Annotated\Annotation\Relation\RefersTo;
 use Cycle\Annotated\Annotation\Relation\HasOne;
 use Cycle\Annotated\Annotation as Cycle;
 
@@ -27,6 +28,9 @@ class Character
 
     /** @BelongsTo(target = "User", inverse = @Inverse(as = "characters", type = "hasMany")) */
     protected $user;
+
+    /** @RefersTo(target = "Arena", nullable = true) */
+    protected $currentArena;
 
     public function __construct(User $user)
     {
@@ -66,5 +70,10 @@ class Character
     public function getMatchSearch(): ?MatchSearch
     {
         return $this->matchSearch;
+    }
+
+    public function setCurrentArena(?Arena $arena): void
+    {
+        $this->currentArena = $arena;
     }
 }

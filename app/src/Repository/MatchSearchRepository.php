@@ -12,11 +12,11 @@ class MatchSearchRepository extends Repository
     /**
      * @return MatchSearch[]
      */
-    public function findOldestMatchSearches($limit = 100)
+    public function findOldestMatchSearches($limit = 100): array
     {
         return $this->select()
             ->load('character.user')
-            ->orderBy('started', 'DESC')
+            ->orderBy('started')
             ->limit($limit)
             ->fetchAll();
     }

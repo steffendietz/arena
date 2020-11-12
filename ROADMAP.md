@@ -1,3 +1,10 @@
+# Start Playing
+
+Ability to start playing immediately. No Account creation.
+Clicking the 'Start playing' button creates a `Character` and temporary `User` (for WS connection) and
+transports the user to the Character screen.
+From there the `User` can be turned into an account by providing email and password.
+
 # Arena Names
 
 Could be constructed from various parts. For example:

@@ -85,6 +85,9 @@ class CharacterController
             $this->tr->run();
         }
 
-        return $this->response->redirect('character:list');
+        return $this->response->redirect(
+            $this->router->uri('character:list'),
+            303
+        );
     }
 }
