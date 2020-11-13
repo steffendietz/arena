@@ -1,5 +1,4 @@
 <a href="/">[[Home]]</a>
-| <a href="@route('arena:generate')">[[Generate Arena]]</a>
 @ifloggedin
 | <a href="@route('character:list')">[[Character List]]</a>
 | <a href="@route('character')">[[Generate Character]]</a>
