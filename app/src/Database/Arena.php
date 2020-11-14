@@ -22,6 +22,12 @@ class Arena
     /** @Cycle\Column(type = "boolean") */
     protected $active = true;
 
+    /** @Cycle\Column(type = "integer") */
+    protected $levels = 1;
+
+    /** @Cycle\Column(type = "integer") */
+    protected $currentLevel = 0;
+
     /** @ManyToMany(target = "Character", though = "ArenaCharacter") */
     protected $characters;
 
@@ -46,6 +52,21 @@ class Arena
     public function setActive(bool $active): void
     {
         $this->active = $active;
+    }
+
+    public function getLevels(): int
+    {
+        return $this->levels;
+    }
+
+    public function getCurrentLevel(): int
+    {
+        return $this->currentLevel;
+    }
+
+    public function setCurrentLevel(int $currentLevel): void
+    {
+        $this->currentLevel = $currentLevel;
     }
 
     public function addCharacter(Character $character): void
