@@ -3,13 +3,16 @@ http:
   address: 0.0.0.0:8080
   workers:
     command: "php app.php"
-    relay: "unix://http-workers.unix"
+    relay: "pipes"
     pool.numWorkers: 1
 
 # ticker
 ticker:
   interval: 5
-  workers.command: "php app.php"
+  workers:
+    command: "php app.php"
+    relay: "pipes"
+    pool.numWorkers: 1
 
 # broadcast
 broadcast:
@@ -30,7 +33,7 @@ jobs:
   consume: ["local"]
   workers:
     command: "php app.php"
-    relay: "unix://job-workers.unix"
+    relay: "pipes"
     pool.numWorkers: 1
 
 # serve static files
