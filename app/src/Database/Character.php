@@ -21,6 +21,9 @@ class Character
     #[Column(type: 'string(32)')]
     protected string $name;
 
+    #[Column(type: 'integer')]
+    protected int $currentHealth = 100;
+
     #[HasOne(target: MatchSearch::class, nullable: true, load: 'eager')]
     protected ?MatchSearch $matchSearch;
 
@@ -48,6 +51,16 @@ class Character
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setCurrentHealth(int $currentHealth): void
+    {
+        $this->currentHealth = $currentHealth;
+    }
+
+    public function getCurrentHealth(): int
+    {
+        return $this->currentHealth;
     }
 
     public function getUser(): User

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dispatcher;
 
+use App\Combat\CombatHandler;
 use App\Database\Arena;
 use App\Database\MatchSearch;
 use App\Database\User;
@@ -30,13 +31,16 @@ class TickerDispatcher implements DispatcherInterface
     private BroadcastInterface $broadcast;
     private FinalizerInterface $finalizer;
 
+    private CombatHandler $combatHandler;
+
     public function __construct(
         ORMInterface $orm,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         EnvironmentInterface $env,
         BroadcastInterface $broadcast,
-        FinalizerInterface $finalizer
+        FinalizerInterface $finalizer,
+        CombatHandler $combatHandler
     ) {
         $this->orm = $orm;
         $this->logger = $logger;
@@ -44,6 +48,7 @@ class TickerDispatcher implements DispatcherInterface
         $this->env = $env;
         $this->broadcast = $broadcast;
         $this->finalizer = $finalizer;
+        $this->combatHandler = $combatHandler;
     }
 
     public function canServe(): bool
@@ -93,15 +98,16 @@ class TickerDispatcher implements DispatcherInterface
             // do match handling
             $activeArenas = $arenaRepository->findActiveArenas(5);
             foreach ($activeArenas as $arena) {
+                $this->combatHandler->battle($arena);
+
                 $this->logger->debug('Arena ' . $arena->getUuid() . ' is ' . $arena->isActive() ? 'active' : 'inactive');
                 foreach ($arena->getCharacters() as $character) {
                     $character->setCurrentArena(null);
                     $this->sendToUser($character->getUser(), sprintf('Fighting in arena %s.', $arena->getUuid()));
                 }
                 $arena->setActive(false);
-                $this->entityManager->persistState($arena);
-                $this->entityManager->run();
             }
+            $this->entityManager->run();
 
             // reset some stateful services
             $this->finalizer->finalize();
