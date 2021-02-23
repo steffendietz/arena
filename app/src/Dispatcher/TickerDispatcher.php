@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dispatcher;
 
+use App\Combat\CombatHandler;
 use App\Database\Arena;
 use App\Database\MatchSearch;
 use App\Database\User;
@@ -31,13 +32,16 @@ class TickerDispatcher implements DispatcherInterface
     private FinalizerInterface $finalizer;
     private ContainerInterface $container;
 
+    private CombatHandler $combatHandler;
+
     public function __construct(
         ORMInterface $orm,
         TransactionInterface $tr,
         EnvironmentInterface $env,
         BroadcastInterface $broadcast,
         FinalizerInterface $finalizer,
-        ContainerInterface $container
+        ContainerInterface $container,
+        CombatHandler $combatHandler
     ) {
         $this->tr = $tr;
         $this->orm = $orm;
@@ -45,6 +49,8 @@ class TickerDispatcher implements DispatcherInterface
         $this->broadcast = $broadcast;
         $this->finalizer = $finalizer;
         $this->container = $container;
+
+        $this->combatHandler = $combatHandler;
     }
 
     public function canServe(): bool
@@ -100,11 +106,7 @@ class TickerDispatcher implements DispatcherInterface
             $arenaRepository = $this->orm->getRepository(Arena::class);
 
             foreach ($arenaRepository->findActiveArenas(5) as $arena) {
-                foreach ($arena->getCharacters() as $character) {
-                    $character->setCurrentArena(null);
-                    $this->sendToUser($character->getUser(), 'Fighting.');
-                }
-                $arena->setActive(false);
+           //     $this->combatHandler->battle($arena);
             }
             $this->tr->run();
 

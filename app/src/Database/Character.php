@@ -23,7 +23,10 @@ class Character
     /** @Cycle\Column(type = "string(32)") */
     protected $name;
 
-    /** @HasOne(target = "MatchSearch", load = "eager") */
+    /** @Cycle\Column(type = "integer") */
+    protected $currentHealth = 100;
+
+    /** @HasOne(target = "MatchSearch") */
     protected $matchSearch;
 
     /** @BelongsTo(target = "User", inverse = @Inverse(as = "characters", type = "hasMany")) */
@@ -50,6 +53,16 @@ class Character
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setCurrentHealth(int $currentHealth): void
+    {
+        $this->currentHealth = $currentHealth;
+    }
+
+    public function getCurrentHealth(): int
+    {
+        return $this->currentHealth;
     }
 
     public function getUser(): User
