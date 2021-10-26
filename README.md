@@ -10,6 +10,7 @@ Inside the development container perform:
 $ composer install
 $ npm i --prefix ./frontend
 $ ./app.php cycle:sync
+$ ./app.php create:user demo
 $ ./spiral serve -d -v
 $ npm run --prefix ./frontend start
 ```
