@@ -1,37 +1,38 @@
 {
-    "name": "arena/arena",
-    "description": "Arena",
+    "name": "spiral/app",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
+    "description": "Spiral Skeleton Application",
+    "homepage": "https://spiral.dev",
+    "support": {
+        "issues": "https://github.com/spiral/app/issues",
+        "source": "https://github.com/spiral/app"
+    },
+    "authors": [
+        {
+            "name": "Wolfy-J",
+            "email": "wolfy.jd@gmail.com"
+        }
+    ],
     "require": {
-        "php": "^7.4",
+        "php": ">=8.0",
         "ext-mbstring": "*",
-        "cycle/annotated": "^2.0",
-        "cycle/migrations": "^1.0",
-        "cycle/orm": "^1.0",
-        "cycle/proxy-factory": "^1.0",
-        "ramsey/uuid": "^4.1",
-        "spiral/broadcast": "^2.0",
-        "spiral/database": "^2.3",
-        "spiral/dotenv-bridge": "^1.0",
-        "spiral/framework": "^2.6",
-        "spiral/jobs": "^2.0",
-        "spiral/migrations": "^2.0",
-        "spiral/monolog-bridge": "^1.0",
+        "doctrine/collections": "^1.6",
+        "spiral/cycle-bridge": "^1.0",
+        "spiral/framework": "^2.9",
         "spiral/nyholm-bridge": "^1.0",
-        "spiral/prototype": "^1.0",
-        "spiral/roadrunner": "^1.4",
-        "spiral/scaffolder": "^2.0",
-        "spiral/stempler-bridge": "^1.0"
+        "spiral/roadrunner-bridge": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.5|^9.0"
+        "phpunit/phpunit": "^9.5",
+        "spiral/testing": "^1.1"
     },
     "scripts": {
-        "post-install-cmd": [
+        "post-create-project-cmd": [
             "php -r \"copy('.env.sample', '.env');\"",
             "php app.php encrypt:key -m .env",
-            "php app.php configure -vv"
+            "php app.php configure -vv",
+            "rr get-binary"
         ]
     },
     "autoload": {
@@ -45,11 +46,23 @@
         }
     },
     "extra": {
-        "publish-cmd": "php app.php publish"
+        "publish-cmd": "php app.php publish",
+        "branch-alias": {
+            "dev-master": "1.4.x-dev"
+        }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "spiral/composer-publish-plugin": false
+        }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/usr/local//share/app-scripts/roadrunner-bridge"
+        }
+    ]
 }

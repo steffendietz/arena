@@ -4,32 +4,30 @@ declare(strict_types=1);
 
 namespace App\Database;
 
-use Cycle\Annotated\Annotation as Cycle;
+use App\Database\Mapper\UuidMapper;
+use App\Repository\ArenaRepository;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Relation\ManyToMany;
-use Cycle\ORM\Relation\Pivoted\PivotedCollection;
+use Cycle\ORM\Collection\Pivoted\PivotedCollection;
 
-/**
- * @Cycle\Entity(
- *     repository = "App\Repository\ArenaRepository",
- *     mapper = "Mapper\UuidMapper"
- * )
- */
+#[Entity(mapper: UuidMapper::class, repository: ArenaRepository::class)]
 class Arena
 {
-    /** @Cycle\Column(type = "string(36)", primary = true) */
-    protected $uuid;
+    #[Column(type: 'string(36)', primary: true)]
+    protected string $uuid;
 
-    /** @Cycle\Column(type = "boolean") */
-    protected $active = true;
+    #[Column(type: 'boolean')]
+    protected bool $active = true;
 
-    /** @Cycle\Column(type = "integer") */
-    protected $levels = 1;
+    #[Column(type: 'integer')]
+    protected int $levels = 1;
 
-    /** @Cycle\Column(type = "integer") */
-    protected $currentLevel = 0;
+    #[Column(type: 'integer')]
+    protected int $currentLevel = 0;
 
-    /** @ManyToMany(target = "Character", though = "ArenaCharacter") */
-    protected $characters;
+    #[ManyToMany(target: Character::class, through: ArenaCharacter::class)]
+    protected PivotedCollection $characters;
 
     public function __construct()
     {

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Database;
 
-use Cycle\Annotated\Annotation as Cycle;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
 
-/**
- * @Cycle\Entity()
- */
+#[Entity()]
 class ArenaCharacter
 {
 
-    /** @Cycle\Column(type = "primary") */
-    protected $id;
+    #[Column(type: 'primary')]
+    protected int $id;
 }

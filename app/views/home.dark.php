@@ -5,7 +5,7 @@
 </stack:push>
 
 <stack:push name="scripts">
-    <script src="/scripts/main.js"></script>
+    <script src="/scripts/websocket.js"></script>
 </stack:push>
 
 <define:body>

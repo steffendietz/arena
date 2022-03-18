@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use Spiral\Broadcast\BroadcastInterface;
-use Spiral\Broadcast\Message;
 use Spiral\Console\Command;
+use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
 class PostCommand extends Command
@@ -22,6 +21,6 @@ class PostCommand extends Command
      */
     protected function perform(BroadcastInterface $broadcast): void
     {
-        $broadcast->publish(new Message('channel', $this->argument('message')));
+        $broadcast->publish('channel', $this->argument('message'));
     }
 }

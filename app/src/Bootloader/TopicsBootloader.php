@@ -7,11 +7,10 @@ namespace App\Bootloader;
 use App\Database\User;
 use Spiral\Auth\AuthScope;
 use Spiral\Boot\Bootloader\Bootloader;
-use Spiral\Bootloader\Http\WebsocketsBootloader;
+use Spiral\RoadRunnerBridge\Bootloader\WebsocketsBootloader;
 
 class TopicsBootloader extends Bootloader
 {
-
     protected const DEPENDENCIES = [
         WebsocketsBootloader::class
     ];
@@ -25,11 +24,10 @@ class TopicsBootloader extends Bootloader
             }
         );
         $ws->authorizeTopic('channel.{uuid}', function ($uuid, AuthScope $auth): bool {
+            dumprr('join request');
             /** @var User $user */
             $user = $auth->getActor();
-            if ($user !== null && $user->getUuid() === $uuid) {
-                return true;
-            }
+            return $user !== null && $user->getUuid() === $uuid;
         });
     }
 }

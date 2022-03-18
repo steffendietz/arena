@@ -9,14 +9,13 @@ use App\Database\MatchSearch;
 use App\Database\User;
 use App\Repository\ArenaRepository;
 use App\Repository\MatchSearchRepository;
+use Cycle\ORM\EntityManagerInterface;
 use Cycle\ORM\ORMInterface;
-use Cycle\ORM\TransactionInterface;
 use Psr\Container\ContainerInterface;
 use Spiral\Boot\DispatcherInterface;
 use Spiral\Boot\EnvironmentInterface;
 use Spiral\Boot\FinalizerInterface;
-use Spiral\Broadcast\BroadcastInterface;
-use Spiral\Broadcast\Message;
+use Spiral\Roadrunner\Broadcast\BroadcastInterface;
 use Spiral\RoadRunner\Worker;
 
 class TickerDispatcher implements DispatcherInterface
@@ -25,7 +24,7 @@ class TickerDispatcher implements DispatcherInterface
     const CHARACTERS_NEEDED_FOR_MATCH = 3;
 
     private ORMInterface $orm;
-    private TransactionInterface $tr;
+    private EntityManagerInterface $entityManager;
     private EnvironmentInterface $env;
     private BroadcastInterface $broadcast;
     private FinalizerInterface $finalizer;
@@ -33,13 +32,13 @@ class TickerDispatcher implements DispatcherInterface
 
     public function __construct(
         ORMInterface $orm,
-        TransactionInterface $tr,
+        EntityManagerInterface $entityManager,
         EnvironmentInterface $env,
         BroadcastInterface $broadcast,
         FinalizerInterface $finalizer,
         ContainerInterface $container
     ) {
-        $this->tr = $tr;
+        $this->entityManager = $entityManager;
         $this->orm = $orm;
         $this->env = $env;
         $this->broadcast = $broadcast;
@@ -83,10 +82,10 @@ class TickerDispatcher implements DispatcherInterface
 
                         $this->sendToUser($character->getUser(), sprintf('Match ' . $chunkIndex . ' found for Character %s (%s)!', $characterName, $characterUuid));
 
-                        $this->tr->delete($matchSearch);
+                        $this->entityManager->delete($matchSearch);
                     }
-                    $this->tr->persist($arena);
-                    $this->tr->run();
+                    $this->entityManager->persist($arena);
+                    $this->entityManager->run();
                 } else {
                     file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
                     foreach ($chunk as $matchSearch) {
@@ -106,7 +105,7 @@ class TickerDispatcher implements DispatcherInterface
                 }
                 $arena->setActive(false);
             }
-            $this->tr->run();
+            $this->entityManager->run();
 
             $worker->send("OK");
 
@@ -117,9 +116,6 @@ class TickerDispatcher implements DispatcherInterface
 
     private function sendToUser(User $user, string $message)
     {
-        $this->broadcast->publish(new Message(
-            'channel.' . $user->getUuid(),
-            $message
-        ));
+        $this->broadcast->publish('channel.' . $user->getUuid(), $message);
     }
 }

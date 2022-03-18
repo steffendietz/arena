@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Database\User;
-use Cycle\ORM\TransactionInterface;
+use Cycle\ORM\EntityManagerInterface;
 use Spiral\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +16,7 @@ class CreateUserCommand extends Command
 {
     protected const NAME = 'create:user';
 
-    protected const DESCRIPTION = '';
+    protected const DESCRIPTION = 'Create an arena user';
 
     protected const ARGUMENTS = [
         ['username', InputArgument::REQUIRED]
@@ -30,7 +30,7 @@ class CreateUserCommand extends Command
     protected function perform(
         InputInterface $input,
         OutputInterface $output,
-        TransactionInterface $tr
+        EntityManagerInterface $entityManager
     ): void {
         $helper = $this->getHelper('question');
 
@@ -52,6 +52,6 @@ class CreateUserCommand extends Command
         $u->username = $this->argument('username');
         $u->password = password_hash($password, PASSWORD_DEFAULT);
 
-        $tr->persist($u)->run();
+        $entityManager->persist($u)->run();
     }
 }

@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        VARIANT: "8"
+        NODE_VERSION: "lts/*"
+    volumes:
+      - ..:/workspace:cached
+      - ../..:/usr/local/share/app-scripts:cached
+    user: vscode
+  mariadb:
+    image: mariadb:10
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_USER: arena-user
+      MYSQL_PASSWORD: arena-password
+      MYSQL_DATABASE: arena

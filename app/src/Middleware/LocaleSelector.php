@@ -48,6 +48,7 @@ class LocaleSelector implements MiddlewareInterface
         $defaultLocale = $this->translator->getLocale();
 
         try {
+            /** @var string $locale */
             foreach ($this->fetchLocales($request) as $locale) {
                 if ($locale !== '' && in_array($locale, $this->availableLocales, true)) {
                     $this->translator->setLocale($locale);

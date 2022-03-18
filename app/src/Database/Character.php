@@ -4,33 +4,31 @@ declare(strict_types=1);
 
 namespace App\Database;
 
+use App\Database\Mapper\UuidMapper;
 use Cycle\Annotated\Annotation\Relation\Inverse;
 use Cycle\Annotated\Annotation\Relation\BelongsTo;
 use Cycle\Annotated\Annotation\Relation\RefersTo;
 use Cycle\Annotated\Annotation\Relation\HasOne;
-use Cycle\Annotated\Annotation as Cycle;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
 
-/**
- * @Cycle\Entity(
- *     mapper = "Mapper\UuidMapper"
- * )
- */
+#[Entity(mapper: UuidMapper::class)]
 class Character
 {
-    /** @Cycle\Column(type = "string(36)", primary = true) */
-    protected $uuid;
+    #[Column(type: 'string(36)', primary: true)]
+    protected string $uuid;
 
-    /** @Cycle\Column(type = "string(32)") */
-    protected $name;
+    #[Column(type: 'string(32)')]
+    protected string $name;
 
-    /** @HasOne(target = "MatchSearch", load = "eager") */
-    protected $matchSearch;
+    #[HasOne(target: MatchSearch::class, nullable: true, load: 'eager')]
+    protected ?MatchSearch $matchSearch;
 
-    /** @BelongsTo(target = "User", inverse = @Inverse(as = "characters", type = "hasMany")) */
-    protected $user;
+    #[BelongsTo(target: User::class, inverse: new Inverse('characters', 'hasMany'))]
+    protected User $user;
 
-    /** @RefersTo(target = "Arena", nullable = true) */
-    protected $currentArena;
+    #[RefersTo(target: Arena::class, nullable: true)]
+    protected ?Arena $currentArena;
 
     public function __construct(User $user)
     {

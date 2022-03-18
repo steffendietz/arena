@@ -11,10 +11,10 @@ module.exports = {
     contentBase: '../public',
     publicPath: '/scripts',
     hot: true,
-    port: 8181,
+    port: 8282,
     proxy: {
       context: () => true,
-      target: 'http://localhost:8080'
+      target: 'http://localhost:8181'
     }
   },
 };

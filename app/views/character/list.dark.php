@@ -7,7 +7,7 @@
 <define:body>
     @foreach($characters as $character)
     <div>
-        {{ $character->getUuid() }} -
+        <span class="uuid">{{ $character->getUuid() }}</span> -
         <a href="@route('searchmatch', ['characterUuid' => $character->getUuid()])">
             {{ $character->getName() }}
         </a>

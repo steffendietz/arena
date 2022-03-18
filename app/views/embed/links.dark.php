@@ -6,4 +6,3 @@
 @else
 | <a href="@route('authentication:index')">[[Login]]</a>
 @endif
-| <a href="http://localhost:2112/metrics">[[Application Metrics]]</a>
