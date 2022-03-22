@@ -13,15 +13,15 @@ namespace App;
 
 use App\Bootloader;
 use Spiral\Bootloader as Framework;
+use Spiral\Cycle\Bootloader as CycleBridge;
 use Spiral\DotEnv\Bootloader as DotEnv;
 use Spiral\Framework\Kernel;
 use Spiral\Monolog\Bootloader as Monolog;
 use Spiral\Nyholm\Bootloader as Nyholm;
 use Spiral\Prototype\Bootloader as Prototype;
+use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\Scaffolder\Bootloader as Scaffolder;
 use Spiral\Stempler\Bootloader as Stempler;
-use Spiral\Cycle\Bootloader as CycleBridge;
-use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 
 class App extends Kernel
 {

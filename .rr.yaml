@@ -17,6 +17,16 @@ broadcast:
     driver: memory
     config: {}
 
+service:
+  test_dispatcher_service:
+      command: "php app.php"
+      process_num: 1
+      exec_timeout: 0
+      remain_after_exit: true
+      restart_delay: 1s
+      env:
+        - RR_TICKER: "TICK"
+
 http:
   address: 0.0.0.0:8181
   middleware: [ "gzip", "static", "websockets" ]

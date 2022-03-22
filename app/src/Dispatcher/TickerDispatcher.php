@@ -11,39 +11,39 @@ use App\Repository\ArenaRepository;
 use App\Repository\MatchSearchRepository;
 use Cycle\ORM\EntityManagerInterface;
 use Cycle\ORM\ORMInterface;
-use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Spiral\Boot\DispatcherInterface;
 use Spiral\Boot\EnvironmentInterface;
 use Spiral\Boot\FinalizerInterface;
-use Spiral\Roadrunner\Broadcast\BroadcastInterface;
-use Spiral\RoadRunner\Worker;
+use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 class TickerDispatcher implements DispatcherInterface
 {
 
     const CHARACTERS_NEEDED_FOR_MATCH = 3;
+    const TICKS_PER_MINUTE = 15;
 
     private ORMInterface $orm;
+    private LoggerInterface $logger;
     private EntityManagerInterface $entityManager;
     private EnvironmentInterface $env;
     private BroadcastInterface $broadcast;
     private FinalizerInterface $finalizer;
-    private ContainerInterface $container;
 
     public function __construct(
         ORMInterface $orm,
+        LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         EnvironmentInterface $env,
         BroadcastInterface $broadcast,
-        FinalizerInterface $finalizer,
-        ContainerInterface $container
+        FinalizerInterface $finalizer
     ) {
-        $this->entityManager = $entityManager;
         $this->orm = $orm;
+        $this->logger = $logger;
+        $this->entityManager = $entityManager;
         $this->env = $env;
         $this->broadcast = $broadcast;
         $this->finalizer = $finalizer;
-        $this->container = $container;
     }
 
     public function canServe(): bool
@@ -53,18 +53,14 @@ class TickerDispatcher implements DispatcherInterface
 
     public function serve(): void
     {
-        /** @var Worker $worker */
-        $worker = $this->container->get(Worker::class);
+        /** @var ArenaRepository $arenaRepository */
+        $arenaRepository = $this->orm->getRepository(Arena::class);
 
         /** @var MatchSearchRepository $matchSearchRepository */
         $matchSearchRepository = $this->orm->getRepository(MatchSearch::class);
 
-        while (($body = $worker->receive($ctx)) !== null) {
-            $lastTick = json_decode($ctx)->lastTick;
-            $numTick = json_decode($body)->tick;
-
+        while (true) {
             // do matchmaking
-            file_put_contents('match-search.txt', 'MatchSearch ' . $numTick . PHP_EOL, FILE_APPEND);
             $matchSearches = $matchSearchRepository->findOldestMatchSearches(10 * static::CHARACTERS_NEEDED_FOR_MATCH);
             foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunkIndex => $chunk) {
                 $matchCount = count($chunk);
@@ -87,7 +83,7 @@ class TickerDispatcher implements DispatcherInterface
                     $this->entityManager->persist($arena);
                     $this->entityManager->run();
                 } else {
-                    file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
+                    $this->logger->info('Only found ' . $matchCount . ' characters searching for match.');
                     foreach ($chunk as $matchSearch) {
                         $this->sendToUser($matchSearch->getCharacter()->getUser(), 'Still searching!');
                     }
@@ -95,9 +91,6 @@ class TickerDispatcher implements DispatcherInterface
             }
 
             // do match handling
-            /** @var ArenaRepository $arenaRepository */
-            $arenaRepository = $this->orm->getRepository(Arena::class);
-
             foreach ($arenaRepository->findActiveArenas(5) as $arena) {
                 foreach ($arena->getCharacters() as $character) {
                     $character->setCurrentArena(null);
@@ -107,10 +100,10 @@ class TickerDispatcher implements DispatcherInterface
             }
             $this->entityManager->run();
 
-            $worker->send("OK");
-
             // reset some stateful services
             $this->finalizer->finalize();
+
+            sleep(60 / static::TICKS_PER_MINUTE);
         }
     }
 
