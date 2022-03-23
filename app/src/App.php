@@ -92,7 +92,7 @@ class App extends Kernel
         Framework\Views\TranslatedCacheBootloader::class,
 
         // Additional dispatchers
-        //Bootloader\TickerBootloader::class,
+        Bootloader\TickerBootloader::class,
 
         // Extensions and bridges
         Stempler\StemplerBootloader::class,

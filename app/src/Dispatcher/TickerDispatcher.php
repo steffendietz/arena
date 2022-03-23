@@ -53,13 +53,13 @@ class TickerDispatcher implements DispatcherInterface
 
     public function serve(): void
     {
-        /** @var ArenaRepository $arenaRepository */
-        $arenaRepository = $this->orm->getRepository(Arena::class);
-
-        /** @var MatchSearchRepository $matchSearchRepository */
-        $matchSearchRepository = $this->orm->getRepository(MatchSearch::class);
-
         while (true) {
+            /** @var ArenaRepository $arenaRepository */
+            $arenaRepository = $this->orm->getRepository(Arena::class);
+
+            /** @var MatchSearchRepository $matchSearchRepository */
+            $matchSearchRepository = $this->orm->getRepository(MatchSearch::class);
+
             // do matchmaking
             $matchSearches = $matchSearchRepository->findOldestMatchSearches(10 * static::CHARACTERS_NEEDED_FOR_MATCH);
             foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunkIndex => $chunk) {
@@ -76,7 +76,7 @@ class TickerDispatcher implements DispatcherInterface
                         $characterName = $character->getName();
                         $characterUuid = $character->getUuid();
 
-                        $this->sendToUser($character->getUser(), sprintf('Match ' . $chunkIndex . ' found for Character %s (%s)!', $characterName, $characterUuid));
+                        $this->sendToUser($character->getUser(), sprintf('Match %d found for Character %s (%s)!', $chunkIndex, $characterName, $characterUuid));
 
                         $this->entityManager->delete($matchSearch);
                     }
@@ -91,14 +91,17 @@ class TickerDispatcher implements DispatcherInterface
             }
 
             // do match handling
-            foreach ($arenaRepository->findActiveArenas(5) as $arena) {
+            $activeArenas = $arenaRepository->findActiveArenas(5);
+            foreach ($activeArenas as $arena) {
+                $this->logger->debug('Arena ' . $arena->getUuid() . ' is ' . $arena->isActive() ? 'active' : 'inactive');
                 foreach ($arena->getCharacters() as $character) {
                     $character->setCurrentArena(null);
-                    $this->sendToUser($character->getUser(), 'Fighting.');
+                    $this->sendToUser($character->getUser(), sprintf('Fighting in arena %s.', $arena->getUuid()));
                 }
                 $arena->setActive(false);
+                $this->entityManager->persistState($arena);
+                $this->entityManager->run();
             }
-            $this->entityManager->run();
 
             // reset some stateful services
             $this->finalizer->finalize();

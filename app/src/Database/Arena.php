@@ -52,6 +52,11 @@ class Arena
         $this->active = $active;
     }
 
+    public function  isActive(): bool
+    {
+        return $this->active;
+    }
+
     public function getLevels(): int
     {
         return $this->levels;
