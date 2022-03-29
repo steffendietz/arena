@@ -10,9 +10,11 @@
         "spiral/cycle-bridge": "^1.0",
         "spiral/framework": "^2.9",
         "spiral/nyholm-bridge": "^1.0",
-        "spiral/roadrunner-bridge": "dev-master"
+        "spiral/roadrunner-bridge": "^1.0",
+        "spiral/roadrunner-broadcast": "^2.0"
     },
     "require-dev": {
+        "phpstan/phpstan": "^1.4",
         "phpunit/phpunit": "^9.5",
         "spiral/testing": "^1.1"
     },
@@ -25,6 +27,9 @@
         ]
     },
     "autoload": {
+        "files": [
+            "app/src/polyfill.php"
+        ],
         "psr-4": {
             "App\\": "app/src"
         }
@@ -41,11 +46,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "path",
-            "url": "/usr/local//share/app-scripts/roadrunner-bridge"
-        }
-    ]
+    "prefer-stable": true
 }
