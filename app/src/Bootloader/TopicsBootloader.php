@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Bootloader;
 
-use Spiral\Auth\AuthScope;
+use Spiral\Auth\AuthContextInterface;
 use Spiral\Boot\Bootloader\Bootloader;
-use Spiral\RoadRunnerBridge\Bootloader\WebsocketsBootloader;
+use Spiral\Bootloader\Http\WebsocketsBootloader;
 
 class TopicsBootloader extends Bootloader
 {
     protected const DEPENDENCIES = [
-        WebsocketsBootloader::class
+        WebsocketsBootloader::class,
     ];
 
     public function boot(WebsocketsBootloader $ws): void
@@ -19,8 +19,8 @@ class TopicsBootloader extends Bootloader
         $ws->authorizeTopic('channel', function (): bool {
             return true;
         });
-        $ws->authorizeTopic('channel.{uuid}', function ($uuid, AuthScope $auth): bool {
-            return $auth->getActor()?->getUuid() === $uuid;
+        $ws->authorizeTopic('channel.{uuid}', function ($uuid, AuthContextInterface $authContext): bool {
+            return $authContext->getActor()?->getUuid() === $uuid;
         });
     }
 }

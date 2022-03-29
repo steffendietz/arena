@@ -36,8 +36,6 @@ class App extends Kernel
         RoadRunnerBridge\GRPCBootloader::class,
         RoadRunnerBridge\HttpBootloader::class,
         RoadRunnerBridge\QueueBootloader::class,
-        RoadrunnerBridge\BroadcastBootloader::class,
-        RoadRunnerBridge\WebsocketsBootloader::class,
         RoadRunnerBridge\RoadRunnerBootloader::class,
 
         // Base extensions
@@ -83,6 +81,10 @@ class App extends Kernel
 
         // Auth
         CycleBridge\AuthTokensBootloader::class,
+
+        // Websockets (after Auth)
+        Framework\Broadcast\BroadcastBootloader::class,
+        Framework\Http\WebsocketsBootloader::class,
 
         // Entity checker
         // CycleBridge\ValidationBootloader::class,

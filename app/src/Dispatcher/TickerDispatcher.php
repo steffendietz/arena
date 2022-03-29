@@ -110,7 +110,7 @@ class TickerDispatcher implements DispatcherInterface
         }
     }
 
-    private function sendToUser(User $user, string $message)
+    private function sendToUser(User $user, string $message): void
     {
         $this->broadcast->publish('channel.' . $user->getUuid(), $message);
     }
