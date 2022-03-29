@@ -9,42 +9,41 @@ use App\Database\MatchSearch;
 use App\Database\User;
 use App\Repository\ArenaRepository;
 use App\Repository\MatchSearchRepository;
+use Cycle\ORM\EntityManagerInterface;
 use Cycle\ORM\ORMInterface;
-use Cycle\ORM\TransactionInterface;
-use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Spiral\Boot\DispatcherInterface;
 use Spiral\Boot\EnvironmentInterface;
 use Spiral\Boot\FinalizerInterface;
-use Spiral\Broadcast\BroadcastInterface;
-use Spiral\Broadcast\Message;
-use Spiral\RoadRunner\Worker;
+use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 class TickerDispatcher implements DispatcherInterface
 {
 
     const CHARACTERS_NEEDED_FOR_MATCH = 3;
+    const TICKS_PER_MINUTE = 15;
 
     private ORMInterface $orm;
-    private TransactionInterface $tr;
+    private LoggerInterface $logger;
+    private EntityManagerInterface $entityManager;
     private EnvironmentInterface $env;
     private BroadcastInterface $broadcast;
     private FinalizerInterface $finalizer;
-    private ContainerInterface $container;
 
     public function __construct(
         ORMInterface $orm,
-        TransactionInterface $tr,
+        LoggerInterface $logger,
+        EntityManagerInterface $entityManager,
         EnvironmentInterface $env,
         BroadcastInterface $broadcast,
-        FinalizerInterface $finalizer,
-        ContainerInterface $container
+        FinalizerInterface $finalizer
     ) {
-        $this->tr = $tr;
         $this->orm = $orm;
+        $this->logger = $logger;
+        $this->entityManager = $entityManager;
         $this->env = $env;
         $this->broadcast = $broadcast;
         $this->finalizer = $finalizer;
-        $this->container = $container;
     }
 
     public function canServe(): bool
@@ -54,18 +53,14 @@ class TickerDispatcher implements DispatcherInterface
 
     public function serve(): void
     {
-        /** @var Worker $worker */
-        $worker = $this->container->get(Worker::class);
+        while (true) {
+            /** @var ArenaRepository $arenaRepository */
+            $arenaRepository = $this->orm->getRepository(Arena::class);
 
-        /** @var MatchSearchRepository $matchSearchRepository */
-        $matchSearchRepository = $this->orm->getRepository(MatchSearch::class);
-
-        while (($body = $worker->receive($ctx)) !== null) {
-            $lastTick = json_decode($ctx)->lastTick;
-            $numTick = json_decode($body)->tick;
+            /** @var MatchSearchRepository $matchSearchRepository */
+            $matchSearchRepository = $this->orm->getRepository(MatchSearch::class);
 
             // do matchmaking
-            file_put_contents('match-search.txt', 'MatchSearch ' . $numTick . PHP_EOL, FILE_APPEND);
             $matchSearches = $matchSearchRepository->findOldestMatchSearches(10 * static::CHARACTERS_NEEDED_FOR_MATCH);
             foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunkIndex => $chunk) {
                 $matchCount = count($chunk);
@@ -81,14 +76,14 @@ class TickerDispatcher implements DispatcherInterface
                         $characterName = $character->getName();
                         $characterUuid = $character->getUuid();
 
-                        $this->sendToUser($character->getUser(), sprintf('Match ' . $chunkIndex . ' found for Character %s (%s)!', $characterName, $characterUuid));
+                        $this->sendToUser($character->getUser(), sprintf('Match %d found for Character %s (%s)!', $chunkIndex, $characterName, $characterUuid));
 
-                        $this->tr->delete($matchSearch);
+                        $this->entityManager->delete($matchSearch);
                     }
-                    $this->tr->persist($arena);
-                    $this->tr->run();
+                    $this->entityManager->persist($arena);
+                    $this->entityManager->run();
                 } else {
-                    file_put_contents('match-search.txt', '- Only found ' . $matchCount . ' characters searching for match.' . PHP_EOL, FILE_APPEND);
+                    $this->logger->info('Only found ' . $matchCount . ' characters searching for match.');
                     foreach ($chunk as $matchSearch) {
                         $this->sendToUser($matchSearch->getCharacter()->getUser(), 'Still searching!');
                     }
@@ -96,30 +91,27 @@ class TickerDispatcher implements DispatcherInterface
             }
 
             // do match handling
-            /** @var ArenaRepository $arenaRepository */
-            $arenaRepository = $this->orm->getRepository(Arena::class);
-
-            foreach ($arenaRepository->findActiveArenas(5) as $arena) {
+            $activeArenas = $arenaRepository->findActiveArenas(5);
+            foreach ($activeArenas as $arena) {
+                $this->logger->debug('Arena ' . $arena->getUuid() . ' is ' . $arena->isActive() ? 'active' : 'inactive');
                 foreach ($arena->getCharacters() as $character) {
                     $character->setCurrentArena(null);
-                    $this->sendToUser($character->getUser(), 'Fighting.');
+                    $this->sendToUser($character->getUser(), sprintf('Fighting in arena %s.', $arena->getUuid()));
                 }
                 $arena->setActive(false);
+                $this->entityManager->persistState($arena);
+                $this->entityManager->run();
             }
-            $this->tr->run();
-
-            $worker->send("OK");
 
             // reset some stateful services
             $this->finalizer->finalize();
+
+            sleep(60 / static::TICKS_PER_MINUTE);
         }
     }
 
-    private function sendToUser(User $user, string $message)
+    private function sendToUser(User $user, string $message): void
     {
-        $this->broadcast->publish(new Message(
-            'channel.' . $user->getUuid(),
-            $message
-        ));
+        $this->broadcast->publish('channel.' . $user->getUuid(), $message);
     }
 }

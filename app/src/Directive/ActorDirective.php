@@ -19,12 +19,12 @@ class ActorDirective extends AbstractDirective
 
     public function renderActor(Directive $directice)
     {
-        return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor() !== null ? $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()->name : "GUEST" ?>';
+        return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()?->name ?? "GUEST" ?>';
     }
 
     public function renderActorUuid(Directive $directice)
     {
-        return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor() !== null ? $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()->getUuid() : null ?>';
+        return '<?= $this->container->get(\Spiral\Auth\AuthScope::class)->getActor()?->getUuid() ?>';
     }
 
     public function renderActorUuidJs(Directive $directice)

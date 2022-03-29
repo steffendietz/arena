@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Database\Character;
 use App\Database\MatchSearch;
+use Cycle\ORM\EntityManagerInterface;
 use Cycle\ORM\Select\Repository;
-use Cycle\ORM\TransactionInterface;
 use Spiral\Http\Exception\ClientException\ForbiddenException;
 use Spiral\Prototype\Traits\PrototypeTrait;
 
@@ -15,11 +15,11 @@ class CharacterController
 {
     use PrototypeTrait;
 
-    protected $tr;
+    protected $entityManager;
 
-    public function __construct(TransactionInterface $tr)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->tr = $tr;
+        $this->entityManager = $entityManager;
     }
 
     public function generate(string $name)
@@ -31,8 +31,8 @@ class CharacterController
         $character = new Character($user);
         $character->setName($name);
 
-        $this->tr->persist($character);
-        $this->tr->run();
+        $this->entityManager->persist($character);
+        $this->entityManager->run();
 
         return sprintf('Generated %s %s', $character->getUuid(), $character->getName());
     }
@@ -78,11 +78,11 @@ class CharacterController
 
         if ($character !== null) {
             if ($character->isMatchSearching()) {
-                $this->tr->delete($character->getMatchSearch());
+                $this->entityManager->delete($character->getMatchSearch());
             } else {
-                $this->tr->persist(new MatchSearch($character));
+                $this->entityManager->persist(new MatchSearch($character));
             }
-            $this->tr->run();
+            $this->entityManager->run();
         }
 
         return $this->response->redirect(

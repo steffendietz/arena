@@ -1,72 +1,55 @@
-# http service configuration.
-http:
-  address: 0.0.0.0:8080
-  workers:
-    command: "php app.php"
-    relay: "pipes"
-    pool.numWorkers: 1
+version: '2.7'
 
-# ticker
-ticker:
-  interval: 5
-  workers:
-    command: "php app.php"
-    relay: "pipes"
-    pool.numWorkers: 1
+rpc:
+  listen: tcp://127.0.0.1:6001
 
-# broadcast
-broadcast:
-  enabled: true
+server:
+  command: "php app.php"
+  relay: pipes
 
-# websockets
-ws:
-  noOrigin: true
+websockets:
+  broker: default
+  allowed_origin: "*"
   path: "/ws"
 
-# queue and jobs
-jobs:
-  dispatch:
-    app-job-*.pipeline: "local"
-  pipelines:
-    local:
-      broker: "ephemeral"
-  consume: ["local"]
-  workers:
-    command: "php app.php"
-    relay: "pipes"
-    pool.numWorkers: 1
+broadcast:
+  default:
+    driver: memory
+    config: {}
 
-# serve static files
-static:
-  dir:    "public"
-  forbid: [".php", ".htaccess"]
+service:
+  test_dispatcher_service:
+      command: "php app.php"
+      process_num: 1
+      exec_timeout: 0
+      remain_after_exit: true
+      restart_delay: 1s
+      env:
+        - RR_TICKER: "TICK"
 
-metrics:
-  # prometheus client address (path /metrics added automatically)
-  address: localhost:2112
+http:
+  address: 0.0.0.0:8181
+  middleware: [ "gzip", "static", "websockets" ]
+  static:
+    dir: "public"
+    forbid: [ ".php", ".htaccess" ]
+  pool:
+    num_workers: 1
+    supervisor:
+      max_worker_memory: 100
 
-# control the max memory usage
-limit:
-  services:
-    http.maxMemory: 100
-    jobs.maxMemory: 100
+kv:
+  local:
+    driver: memory
+    config:
+      interval: 60
 
 reload:
-  # enable or disable file watcher
-  enabled: true
-  # sync interval
   interval: 1s
-  # global patterns to sync
-  patterns: [".php"]
-  # list of included for sync services
+  patterns: [ ".php" ]
   services:
     http:
-      # recursive search for file patterns to add
+      dirs: [ "." ]
       recursive: true
-      # ignored folders
-      ignore: ["vendor"]
-      # service specific file pattens to sync
-      patterns: [".php", ".go", ".md",]
-      # directories to sync. If recursive is set to true, 
-      # recursive sync will be applied only to the directories in `dirs` section
-      dirs: ["."]
+      ignore: [ "vendor", "runtime" ]
+      patterns: [ ".php" ]

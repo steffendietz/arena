@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace App\Database;
 
+use App\Repository\MatchSearchRepository;
 use Cycle\Annotated\Annotation\Relation\Inverse;
 use Cycle\Annotated\Annotation\Relation\BelongsTo;
-use Cycle\Annotated\Annotation as Cycle;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use DateTimeInterface;
 use DateTimeImmutable;
 
-/**
- * @Cycle\Entity(
- *     repository = "App\Repository\MatchSearchRepository"
- * )
- */
+#[Entity(repository: MatchSearchRepository::class)]
 class MatchSearch
 {
+    #[Column(type: 'primary')]
+    protected int $id;
 
-    /** @Cycle\Column(type = "primary") */
-    protected $id;
+    #[Column(type: 'datetime')]
+    protected DateTimeInterface $started;
 
-    /** @Cycle\Column(type = "datetime") */
-    protected $started;
-
-    /** @BelongsTo(target = "Character", inverse = @Inverse(as = "matchSearch", type = "hasOne")) */
+    #[BelongsTo(target: Character::class, inverse: new Inverse('matchSearch', 'hasOne'))]
     protected $character;
 
     public function __construct(Character $character)

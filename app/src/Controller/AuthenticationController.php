@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Database\User;
 use App\Repository\UserRepository;
 use App\Request\LoginRequest;
-use Cycle\ORM\Transaction;
 use Spiral\Http\Exception\ClientException\ForbiddenException;
 use Spiral\Prototype\Traits\PrototypeTrait;
 
@@ -26,7 +25,7 @@ class AuthenticationController
     }
 
 
-    public function index(Transaction $t)
+    public function index()
     {
         return $this->views->render('login.dark.php');
     }

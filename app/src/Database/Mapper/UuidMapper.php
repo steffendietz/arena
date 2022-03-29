@@ -7,8 +7,10 @@ use Ramsey\Uuid\Uuid;
 
 class UuidMapper extends Mapper
 {
-    public function nextPrimaryKey(): string
+    public function nextPrimaryKey(): ?array
     {
-        return Uuid::uuid4()->toString();
+        return [
+            'uuid' => Uuid::uuid4()->toString()
+        ];
     }
 }

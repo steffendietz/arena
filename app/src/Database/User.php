@@ -4,35 +4,32 @@ declare(strict_types=1);
 
 namespace App\Database;
 
+use App\Database\Mapper\UuidMapper;
+use App\Repository\UserRepository;
 use Cycle\Annotated\Annotation\Relation\HasMany;
-use Cycle\Annotated\Annotation as Cycle;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\Annotated\Annotation\Table\Index;
 use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @Cycle\Entity(
- *     repository = "App\Repository\UserRepository",
- *     mapper = "Mapper\UuidMapper"
- * )
- * @Cycle\Table(indexes = {
- *     @Cycle\Table\Index(columns = {"username"}, unique = true)
- * })
- */
+#[Entity(mapper: UuidMapper::class, repository: UserRepository::class)]
+#[Index(columns: ['username'], unique: true)]
 class User
 {
-    /** @Cycle\Column(type = "string(36)", primary = true) */
-    protected $uuid;
+    #[Column(type: 'string(36)', primary: true)]
+    protected string $uuid;
 
-    /** @Cycle\Column(type = "string") */
-    public $name;
+    #[Column(type: 'string')]
+    public string $name;
 
-    /** @Cycle\Column(type = "string") */
-    public $username;
+    #[Column(type: 'string')]
+    public string $username;
 
-    /** @Cycle\Column(type = "string") */
-    public $password;
+    #[Column(type: 'string')]
+    public string $password;
 
-    /** @HasMany(target = "Character") */
-    protected $characters;
+    #[HasMany(target: Character::class)]
+    protected ArrayCollection $characters;
 
     public function __construct()
     {

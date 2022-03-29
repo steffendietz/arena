@@ -1,32 +1,25 @@
 # global ARGs
 ARG VARIANT="7"
-ARG INSTALL_NODE="true"
 ARG NODE_VERSION="lts/*"
 
-FROM golang:1.15-alpine AS spiralbuilder
-WORKDIR /go/src/github.com/steffendietz/arena/
-COPY main.go go.mod go.sum ./
-COPY composite_packages/ ./composite_packages/
+#FROM golang:1.15-alpine AS spiralbuilder
+#WORKDIR /go/src/github.com/steffendietz/arena/
+#COPY main.go go.mod go.sum ./
+#COPY composite_packages/ ./composite_packages/
 
 # creating cachable layer of downloaded modules
-RUN go mod download
+#RUN go mod download
 # compile statically
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o spiral-build .
+#RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o spiral-build .
 
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.145.1/containers/php/.devcontainer/base.Dockerfile
-# [Choice] PHP version: 7, 7.4, 7.3
-ARG VARIANT
-FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
-
-# [Option] Install Node.js
-ARG INSTALL_NODE
-ARG NODE_VERSION
-RUN if [ "${INSTALL_NODE}" = "true" ]; then su vscode -c "source /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
+# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/main/containers/php
+#ARG VARIANT
+FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}
 
 # activate php sockets extension
-RUN docker-php-ext-install sockets
+RUN docker-php-ext-install sockets pdo_mysql
 
-COPY --from=spiralbuilder /go/src/github.com/steffendietz/arena/spiral-build /spiral/
+#COPY --from=spiralbuilder /go/src/github.com/steffendietz/arena/spiral-build /spiral/
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

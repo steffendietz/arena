@@ -19,7 +19,7 @@ use App\App;
 //
 
 mb_internal_encoding('UTF-8');
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL | E_STRICT ^ E_DEPRECATED);
 ini_set('display_errors', 'stderr');
 
 //
@@ -31,8 +31,11 @@ require __DIR__ . '/vendor/autoload.php';
 //
 // Initialize shared container, bindings, directories and etc.
 //
-$app = App::init(['root' => __DIR__]);
+$app = App::create(['root' => __DIR__])->run();
 
-if ($app !== null) {
-    $app->serve();
+if ($app === null) {
+    exit(255);
 }
+
+$code = (int)$app->serve();
+exit($code);

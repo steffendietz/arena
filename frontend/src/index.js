@@ -1,21 +1,27 @@
-import { NamesDict, SFSocket } from '@spiralscout/websockets';
+const ws = new WebSocket('ws://localhost:8181/ws');
 
-const socketOptions = { host: 'localhost', port: 8080, path: 'ws' };
+ws.onopen = e => {
+    const messageJoinChannel = {
+        command: 'join',
+        topics: ['channel']
+    };
 
-// create an instance of SFSocket
-const ws = new SFSocket(socketOptions);
+    ws.send(JSON.stringify(messageJoinChannel));
 
-SFSocket.ready();
+    if (userUuid !== null) {
+        const messageJoinUserChannel = {
+            command: 'join',
+            topics: ['channel.' + userUuid]
+        };
 
-if(userUuid !== null) {
-    const userChannel = ws.joinChannel('channel.' + userUuid);
-    userChannel.subscribe(NamesDict.MESSAGE, (e) => {
-        console.log(e.data);
-        if (e.data === 'leave') {
-            userChannel.leave();
-            console.log('userChannel left');
-        }
-    });
+        ws.send(JSON.stringify(messageJoinUserChannel));
+    }
+};
+
+ws.onmessage = e => {
+    const message = JSON.parse(e.data);
+
+    console.log(`${message.topic}: ${message.payload}`);
 }
 
 if (module.hot) {

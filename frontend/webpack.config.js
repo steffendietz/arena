@@ -7,14 +7,17 @@ module.exports = {
     path: path.resolve(__dirname, '..', 'public', 'scripts'),
   },
   devServer: {
-    index: '',
-    contentBase: '../public',
-    publicPath: '/scripts',
     hot: true,
-    port: 8181,
+    devMiddleware: {
+      publicPath: '/scripts',
+    },
+    static: {
+      directory: path.resolve(__dirname, '..', 'public'),
+    },
+    port: 8282,
     proxy: {
       context: () => true,
-      target: 'http://localhost:8080'
+      target: 'http://localhost:8181'
     }
   },
 };
