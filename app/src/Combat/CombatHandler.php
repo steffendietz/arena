@@ -4,11 +4,13 @@ namespace App\Combat;
 
 use App\Database\Arena;
 use App\Database\Character;
-use Spiral\Broadcast\BroadcastInterface;
-use Spiral\Broadcast\Message;
+use Doctrine\Common\Collections\Collection;
+use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 class CombatHandler
 {
+
+    const DEFAULT_HEALTH = 100;
 
     private BroadcastInterface $broadcast;
 
@@ -17,10 +19,15 @@ class CombatHandler
         $this->broadcast = $broadcast;
     }
 
-    public function battle(Arena $arena)
+    public function bootstrap(Arena $arena): void
     {
-        $this->sendArenaMessage($arena, 'battling');
-        return;
+        foreach ($arena->getCharacters() as $character) {
+            $character->setCurrentHealth(self::DEFAULT_HEALTH);
+        }
+    }
+
+    public function battle(Arena $arena): void
+    {
         $currentLevel = $arena->getCurrentLevel();
 
         // spawn enemies
@@ -28,20 +35,25 @@ class CombatHandler
 
         while ($this->getCharacterHealth($arena) > 0 && $this->getEnemyHealth($enemies) > 0) {
 
-
             // enemy attack phase
             foreach ($enemies as $enemy) {
                 if (($character = $this->select($arena->getCharacters())) === null) {
                     break 2;
                 }
                 $characterCurrentHealth = $character->getCurrentHealth();
+                // BUG currently always deal 0 damage in first level
                 $enemyDamage = rand(1 * $currentLevel, 3 * $currentLevel);
                 $enemyEffectiveDamage = min($characterCurrentHealth, $enemyDamage);
 
                 // apply damage
                 $message = sprintf('%s received %d damage.', $character->getName(), $enemyEffectiveDamage);
-                $this->sendCharacterMessage($character, $message);
-                $character->setCurrentHealth($characterCurrentHealth - $enemyEffectiveDamage);
+                $this->sendArenaMessage($arena, $message);
+                $character->setCurrentHealth(max(0, $characterCurrentHealth - $enemyEffectiveDamage));
+
+                if ($enemy->getCurrentHealth() <= 0) {
+                    $message = sprintf('%s perished.', $character->getName());
+                    $this->sendArenaMessage($arena, $message);
+                }
             }
 
             // character attack phase
@@ -49,14 +61,18 @@ class CombatHandler
                 if (($enemy = $this->select($enemies)) === null) {
                     break 2;
                 }
-                $enemyCurrentHealth = $enemy;
+                $enemyCurrentHealth = $enemy->getCurrentHealth();
                 $characterDamage = rand(5, 15);
                 $characterEffectiveDamage = min($enemyCurrentHealth, $characterDamage);
 
                 // apply damage
                 $message = sprintf('%s dealt %d damage.', $character->getName(), $characterEffectiveDamage);
-                $this->sendCharacterMessage($character, $message);
+                $this->sendArenaMessage($arena, $message);
                 $enemy->setCurrentHealth($enemyCurrentHealth - $characterEffectiveDamage);
+
+                if ($enemy->getCurrentHealth() <= 0) {
+                    $this->sendArenaMessage($arena, 'Enemy perished.');
+                }
             }
 
             break 1;
@@ -66,6 +82,8 @@ class CombatHandler
         if ($currentLevel > $arena->getLevels()) {
             foreach ($arena->getCharacters() as $character) {
                 $character->setCurrentArena(null);
+                $message = sprintf('Arena %s is finished!', $arena->getUuid());
+                $this->sendCharacterMessage($character, $message);
             }
             $arena->setActive(false);
         } else {
@@ -74,9 +92,9 @@ class CombatHandler
     }
 
     /**
-     * @return Character|null
+     * @return Character|Enemy|null
      */
-    private function select(array $selectables)
+    private function select(Collection|array $selectables)
     {
         $eligible = [];
         foreach ($selectables as $selectable) {
@@ -99,11 +117,14 @@ class CombatHandler
         return $characterHealth;
     }
 
-    private function getEnemyHealth($enemies): int
+    /**
+     * @param Enemy[] $enemies
+     */
+    private function getEnemyHealth(array $enemies): int
     {
         $enemyHealth = 0;
         foreach ($enemies as $enemy) {
-            $enemyHealth += $enemy;
+            $enemyHealth += $enemy->getCurrentHealth();
         }
         return $enemyHealth;
     }
@@ -113,7 +134,7 @@ class CombatHandler
      */
     private function spawnEnemies(Arena $arena): array
     {
-        $currentLevel = $arena->getCurrentLevel();
+        $currentLevel = $arena->getCurrentLevel() + 1;
         $numberOfEnemies = rand($currentLevel, $arena->getLevels());
 
         $enemies = [];
@@ -126,11 +147,7 @@ class CombatHandler
 
     private function sendCharacterMessage(Character $character, string $message): void
     {
-        $uuid = $character->getUser()->getUuid();
-        $this->broadcast->publish(new Message(
-            'channel.' . $uuid,
-            $message
-        ));
+        $this->broadcast->publish('channel.' . $character->getUser()->getUuid(), $message);
     }
 
     private function sendArenaMessage(Arena $arena, string $message): void

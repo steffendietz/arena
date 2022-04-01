@@ -85,8 +85,8 @@ class TickerDispatcher implements DispatcherInterface
 
                         $this->entityManager->delete($matchSearch);
                     }
+                    $this->combatHandler->bootstrap($arena);
                     $this->entityManager->persist($arena);
-                    $this->entityManager->run();
                 } else {
                     $this->logger->info('Only found ' . $matchCount . ' characters searching for match.');
                     foreach ($chunk as $matchSearch) {
@@ -94,20 +94,15 @@ class TickerDispatcher implements DispatcherInterface
                     }
                 }
             }
+            $this->entityManager->run();
 
             // do match handling
             $activeArenas = $arenaRepository->findActiveArenas(5);
             foreach ($activeArenas as $arena) {
                 $this->combatHandler->battle($arena);
-
-                $this->logger->debug('Arena ' . $arena->getUuid() . ' is ' . $arena->isActive() ? 'active' : 'inactive');
-                foreach ($arena->getCharacters() as $character) {
-                    $character->setCurrentArena(null);
-                    $this->sendToUser($character->getUser(), sprintf('Fighting in arena %s.', $arena->getUuid()));
-                }
-                $arena->setActive(false);
+                $this->entityManager->persistState($arena);
+                $this->entityManager->run();
             }
-            $this->entityManager->run();
 
             // reset some stateful services
             $this->finalizer->finalize();

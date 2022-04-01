@@ -5,7 +5,8 @@
 	"extensions": [
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
-		"mrmlnc.vscode-apache"
+		"mrmlnc.vscode-apache",
+		"svelte.svelte-vscode",
 	],
 	"forwardPorts": [
 		2112,

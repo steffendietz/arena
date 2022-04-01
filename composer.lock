@@ -3067,16 +3067,16 @@
         },
         {
             "name": "spiral/roadrunner",
-            "version": "v2.8.7",
+            "version": "v2.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-server/roadrunner.git",
-                "reference": "de7b748278b9b626aa1dcf608b916a2b4e342f9b"
+                "reference": "133e19f6952b1fe76ada4b903cb8ec13816827d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/de7b748278b9b626aa1dcf608b916a2b4e342f9b",
-                "reference": "de7b748278b9b626aa1dcf608b916a2b4e342f9b",
+                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/133e19f6952b1fe76ada4b903cb8ec13816827d5",
+                "reference": "133e19f6952b1fe76ada4b903cb8ec13816827d5",
                 "shasum": ""
             },
             "require": {
@@ -3102,9 +3102,9 @@
             "description": "RoadRunner: High-performance PHP application server, load-balancer and process manager written in Golang",
             "support": {
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2.8.7"
+                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2.8.8"
             },
-            "time": "2022-03-24T15:28:39+00:00"
+            "time": "2022-03-31T10:39:11+00:00"
         },
         {
             "name": "spiral/roadrunner-bridge",
@@ -5939,16 +5939,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.5.2",
+            "version": "1.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "f32e95f571c9587b4e14be05253ae56fedd00b2c"
+                "reference": "39953ac1452a8843702ee41a35b4861d3e8207a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f32e95f571c9587b4e14be05253ae56fedd00b2c",
-                "reference": "f32e95f571c9587b4e14be05253ae56fedd00b2c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/39953ac1452a8843702ee41a35b4861d3e8207a7",
+                "reference": "39953ac1452a8843702ee41a35b4861d3e8207a7",
                 "shasum": ""
             },
             "require": {
@@ -5974,7 +5974,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.5.2"
+                "source": "https://github.com/phpstan/phpstan/tree/1.5.3"
             },
             "funding": [
                 {
@@ -5994,7 +5994,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-29T07:34:36+00:00"
+            "time": "2022-03-30T21:55:08+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
