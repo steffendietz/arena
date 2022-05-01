@@ -9,10 +9,7 @@
 		"svelte.svelte-vscode",
 	],
 	"forwardPorts": [
-		2112,
 		8080,
-		8181,
-		8282,
 	],
 	"workspaceFolder": "/workspace"
 }

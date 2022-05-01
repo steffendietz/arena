@@ -9,10 +9,11 @@ Inside the development container perform:
 ```
 $ composer install
 $ npm i --prefix ./frontend
+$ ./vendor/bin/rr get
 $ ./app.php cycle:sync
 $ ./app.php create:user demo
-$ ./spiral serve -d -v
-$ npm run --prefix ./frontend start
+$ ./rr serve -d -v
+$ npm run dev --prefix ./frontend start
 ```
 
-Open http://localhost:8181.
+Open http://localhost:3000.

@@ -73,7 +73,7 @@ class Character
         return $this->matchSearch !== null;
     }
 
-    public function setMatchSearch(MatchSearch $matchSearch)
+    public function setMatchSearch(?MatchSearch $matchSearch)
     {
         $this->matchSearch = $matchSearch;
     }
@@ -86,5 +86,10 @@ class Character
     public function setCurrentArena(?Arena $arena): void
     {
         $this->currentArena = $arena;
+    }
+
+    public function getCurrentArena(): ?Arena
+    {
+        return $this->currentArena;
     }
 }
