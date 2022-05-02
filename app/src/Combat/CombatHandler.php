@@ -34,7 +34,6 @@ class CombatHandler
         $enemies = $this->spawnEnemies($arena);
 
         while ($this->getCharacterHealth($arena) > 0 && $this->getEnemyHealth($enemies) > 0) {
-
             // enemy attack phase
             foreach ($enemies as $enemy) {
                 if (($character = $this->select($arena->getCharacters())) === null) {
@@ -82,10 +81,9 @@ class CombatHandler
         if ($currentLevel > $arena->getLevels()) {
             foreach ($arena->getCharacters() as $character) {
                 $character->setCurrentArena(null);
-                $message = sprintf('Arena %s is finished!', $arena->getUuid());
-                $this->sendCharacterMessage($character, $message);
             }
             $arena->setActive(false);
+            $this->sendArenaMessage($arena, sprintf('Arena %s is finished!', $arena->getUuid()));
         } else {
             $arena->setCurrentLevel($currentLevel);
         }
@@ -153,7 +151,9 @@ class CombatHandler
     private function sendArenaMessage(Arena $arena, string $message): void
     {
         foreach ($arena->getCharacters() as $character) {
-            $this->sendCharacterMessage($character, $message);
+            if ($character->getUser() !== null) {
+                $this->sendCharacterMessage($character, $message);
+            }
         }
     }
 }

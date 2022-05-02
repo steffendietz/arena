@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Database;
 
 use App\Database\Mapper\UuidMapper;
-use Cycle\Annotated\Annotation\Relation\Inverse;
-use Cycle\Annotated\Annotation\Relation\BelongsTo;
-use Cycle\Annotated\Annotation\Relation\RefersTo;
-use Cycle\Annotated\Annotation\Relation\HasOne;
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
+use Cycle\Annotated\Annotation\Relation\BelongsTo;
+use Cycle\Annotated\Annotation\Relation\HasOne;
+use Cycle\Annotated\Annotation\Relation\Inverse;
+use Cycle\Annotated\Annotation\Relation\RefersTo;
+use JetBrains\PhpStorm\ArrayShape;
+use JsonSerializable;
 
 #[Entity(mapper: UuidMapper::class)]
-class Character
+class Character implements JsonSerializable
 {
     #[Column(type: 'string(36)', primary: true)]
     protected string $uuid;
@@ -25,15 +27,15 @@ class Character
     protected int $currentHealth = 100;
 
     #[HasOne(target: MatchSearch::class, nullable: true, load: 'eager')]
-    protected ?MatchSearch $matchSearch;
+    protected ?MatchSearch $matchSearch = null;
 
-    #[BelongsTo(target: User::class, inverse: new Inverse('characters', 'hasMany'))]
-    protected User $user;
+    #[BelongsTo(target: User::class, nullable: true, inverse: new Inverse('characters', 'hasMany'))]
+    protected ?User $user;
 
     #[RefersTo(target: Arena::class, nullable: true)]
-    protected ?Arena $currentArena;
+    protected ?Arena $currentArena = null;
 
-    public function __construct(User $user)
+    public function __construct(?User $user = null)
     {
         $this->user = $user;
     }
@@ -48,7 +50,7 @@ class Character
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -63,7 +65,7 @@ class Character
         return $this->currentHealth;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -91,5 +93,17 @@ class Character
     public function getCurrentArena(): ?Arena
     {
         return $this->currentArena;
+    }
+
+    #[ArrayShape(['id' => "string", 'name' => "string", 'health'=>"int", 'isSearching' => "bool", 'isFighting' => "bool"])]
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->uuid,
+            'name' => $this->name,
+            'health' => $this->currentHealth,
+            'isSearching' => $this->isMatchSearching(),
+            'isFighting' => !is_null($this->currentArena),
+        ];
     }
 }

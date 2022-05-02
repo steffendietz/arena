@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Dispatcher;
 
+use App\Broadcast\DeferredBroadcast;
 use App\Combat\CombatHandler;
 use App\Database\Arena;
+use App\Database\Character;
 use App\Database\MatchSearch;
-use App\Database\User;
 use App\Repository\ArenaRepository;
 use App\Repository\MatchSearchRepository;
 use Cycle\ORM\EntityManagerInterface;
 use Cycle\ORM\ORMInterface;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Spiral\Boot\DispatcherInterface;
 use Spiral\Boot\EnvironmentInterface;
 use Spiral\Boot\FinalizerInterface;
-use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 class TickerDispatcher implements DispatcherInterface
 {
@@ -28,7 +29,7 @@ class TickerDispatcher implements DispatcherInterface
     private LoggerInterface $logger;
     private EntityManagerInterface $entityManager;
     private EnvironmentInterface $env;
-    private BroadcastInterface $broadcast;
+    private DeferredBroadcast $deferredBroadcast;
     private FinalizerInterface $finalizer;
 
     private CombatHandler $combatHandler;
@@ -38,7 +39,7 @@ class TickerDispatcher implements DispatcherInterface
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         EnvironmentInterface $env,
-        BroadcastInterface $broadcast,
+        DeferredBroadcast $deferredBroadcast,
         FinalizerInterface $finalizer,
         CombatHandler $combatHandler
     ) {
@@ -46,7 +47,7 @@ class TickerDispatcher implements DispatcherInterface
         $this->logger = $logger;
         $this->entityManager = $entityManager;
         $this->env = $env;
-        $this->broadcast = $broadcast;
+        $this->deferredBroadcast = $deferredBroadcast;
         $this->finalizer = $finalizer;
         $this->combatHandler = $combatHandler;
     }
@@ -67,30 +68,23 @@ class TickerDispatcher implements DispatcherInterface
 
             // do matchmaking
             $matchSearches = $matchSearchRepository->findOldestMatchSearches(10 * static::CHARACTERS_NEEDED_FOR_MATCH);
-            foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunkIndex => $chunk) {
-                $matchCount = count($chunk);
-                if ($matchCount >= static::CHARACTERS_NEEDED_FOR_MATCH) {
-                    // create match
-                    $arena = new Arena();
-                    foreach ($chunk as $matchSearch) {
-                        $character = $matchSearch->getCharacter();
-
-                        // add character to match
-                        $arena->addCharacter($character);
-
-                        $characterName = $character->getName();
-                        $characterUuid = $character->getUuid();
-
-                        $this->sendToUser($character->getUser(), sprintf('Match %d found for Character %s (%s)!', $chunkIndex, $characterName, $characterUuid));
-
-                        $this->entityManager->delete($matchSearch);
-                    }
-                    $this->combatHandler->bootstrap($arena);
-                    $this->entityManager->persist($arena);
-                } else {
-                    $this->logger->info('Only found ' . $matchCount . ' characters searching for match.');
-                    foreach ($chunk as $matchSearch) {
-                        $this->sendToUser($matchSearch->getCharacter()->getUser(), 'Still searching!');
+            /** @var MatchSearch[] $chunk */
+            foreach (array_chunk($matchSearches, static::CHARACTERS_NEEDED_FOR_MATCH) as $chunk) {
+                $matchSearchCount = count($chunk);
+                if ($matchSearchCount === static::CHARACTERS_NEEDED_FOR_MATCH) {
+                    // create regular match
+                    $this->createMatch($chunk);
+                } elseif ($matchSearchCount > 0 && ($oldestMatchSearch = reset($chunk)) instanceof MatchSearch) {
+                    $currentDateTime = new DateTimeImmutable();
+                    $interval = $currentDateTime->diff($oldestMatchSearch->getStarted(), true);
+                    if ($interval->s > 30) {
+                        // create match with AI
+                        $this->createMatch($chunk);
+                    } else {
+                        $this->logger->info(sprintf('Only found %d characters searching for match.', count($chunk)));
+                        foreach ($chunk as $matchSearch) {
+                            $this->deferredBroadcast->sendToUser($matchSearch->getCharacter()->getUser(), 'general', 'Still searching!');
+                        }
                     }
                 }
             }
@@ -111,8 +105,38 @@ class TickerDispatcher implements DispatcherInterface
         }
     }
 
-    private function sendToUser(User $user, string $message): void
+    /**
+     * @param MatchSearch[] $matchSearches
+     * @return void
+     */
+    private function createMatch(array $matchSearches): void
     {
-        $this->broadcast->publish('channel.' . $user->getUuid(), $message);
+        $arena = new Arena();
+        // fill with AI characters
+        for ($i = 0; $i < self::CHARACTERS_NEEDED_FOR_MATCH - count($matchSearches); $i++) {
+            $aiCharacter = new Character();
+            $aiCharacter->setName('AiCharacter' . $i);
+            $this->entityManager->persist($aiCharacter);
+            $arena->addCharacter($aiCharacter);
+        }
+        foreach ($matchSearches as $matchSearch) {
+            $character = $matchSearch->getCharacter();
+            $character->setMatchSearch(null);
+
+            // add character to match
+            $arena->addCharacter($character);
+
+            $this->entityManager->delete($matchSearch);
+
+            if ($character->getUser()) {
+                $this->deferredBroadcast->sendToUser(
+                    $character->getUser(),
+                    'character',
+                    $character
+                );
+            }
+        }
+        $this->combatHandler->bootstrap($arena);
+        $this->entityManager->persist($arena);
     }
 }

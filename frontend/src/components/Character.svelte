@@ -11,7 +11,9 @@
 
 <li>
     <span>{character.id}</span> {character.name}
-    <button on:click={matchMake}>{#if character.isSearching}matchmaking ...{:else}search{/if}</button>
+    <button on:click={matchMake} disabled={character.isFighting}>
+        {#if character.isSearching}matchmaking ...{:else}search{/if}
+    </button>
 </li>
 
 <style>

@@ -26,9 +26,20 @@ function createStoreManager() {
     ws.onmessage = e => {
         const message = JSON.parse(e.data);
 
-        console.log(`${message.topic}: ${message.payload}`);
+        let payloadData = {};
+        try {
+            payloadData = JSON.parse(message.payload);           
+        } catch (error) {
+            payloadData = {};
+        }
 
-        subscribers.forEach(subscriber => subscriber.callback(message))
+        console.log(`${message.topic}: ${message.payload}`, payloadData);
+
+        subscribers.forEach(subscriber => {
+            if(payloadData.hasOwnProperty(subscriber.namespace)) {
+                subscriber.callback(payloadData[subscriber.namespace]);
+            }
+        });
     }
 
     return {

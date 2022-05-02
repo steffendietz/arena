@@ -21,9 +21,13 @@ function createCharacterStore() {
     const { subscribe, set, update } = writable<Character[]>([]);
 
     getCharacters().then(set);
-    wsStoreManager.subscribeForStoreUpdate('test', payload => {
-        console.log('Hello from character store', payload);
-
+    wsStoreManager.subscribeForStoreUpdate('character', (payload: Character) => {
+        update(chars => chars.map(char => {
+            return char.id === payload.id
+                ? payload
+                : char;
+        }));
+        console.log('payload received from WS', payload);
     });
 
     return {

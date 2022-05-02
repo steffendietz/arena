@@ -15,14 +15,14 @@ class CharacterController
 {
     use PrototypeTrait;
 
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function generate(string $name)
+    public function generate(string $name): string
     {
         if (($user = $this->auth->getActor()) === null) {
             throw new ForbiddenException();
@@ -48,25 +48,12 @@ class CharacterController
     {
         $characters = [];
         foreach ($this->getCharacters() as $character) {
-            $characters[] = $this->mapCharacterToJson($character);
+            $characters[] = $character;
         }
         return $this->response->json(
             $characters,
             200
         );
-    }
-
-    /**
-     * maps a Character to the FEs JSON representation
-     */
-    private function mapCharacterToJson(Character $character): array
-    {
-        return [
-            'id' => $character->getUuid(),
-            'name' => $character->getName(),
-            'isSearching' => !is_null($character->getMatchSearch()),
-            'isFighting' => !is_null($character->getCurrentArena()),
-        ];
     }
 
     /**
@@ -81,14 +68,12 @@ class CharacterController
         /** @var Repository $characterRepo */
         $characterRepo = $this->orm->getRepository(Character::class);
 
-        $characters = $characterRepo
+        return $characterRepo
             ->select()
             ->load('matchSearch')
             ->with('user')
             ->where('user.uuid', $user->getUuid())
             ->fetchAll();
-
-        return $characters;
     }
 
     public function postToggleMatchSearch(string $id)
@@ -120,7 +105,7 @@ class CharacterController
         }
 
         return $this->response->json(
-            $this->mapCharacterToJson($character),
+            $character,
             200
         );
     }
