@@ -2,21 +2,25 @@
 
 namespace App\Combat;
 
+use App\Broadcast\DeferredBroadcast;
 use App\Database\Arena;
 use App\Database\Character;
 use Doctrine\Common\Collections\Collection;
-use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 class CombatHandler
 {
 
     const DEFAULT_HEALTH = 100;
 
-    private BroadcastInterface $broadcast;
+    /**
+     * @var string[]
+     */
+    private array $combatLog = [];
+    private DeferredBroadcast $deferredBroadcast;
 
-    public function __construct(BroadcastInterface $broadcast)
+    public function __construct(DeferredBroadcast $deferredBroadcast)
     {
-        $this->broadcast = $broadcast;
+        $this->deferredBroadcast = $deferredBroadcast;
     }
 
     public function bootstrap(Arena $arena): void
@@ -40,18 +44,15 @@ class CombatHandler
                     break 2;
                 }
                 $characterCurrentHealth = $character->getCurrentHealth();
-                // BUG currently always deal 0 damage in first level
-                $enemyDamage = rand(1 * $currentLevel, 3 * $currentLevel);
+                $enemyDamage = rand($currentLevel + 1, 3 * ($currentLevel + 1));
                 $enemyEffectiveDamage = min($characterCurrentHealth, $enemyDamage);
 
                 // apply damage
-                $message = sprintf('%s received %d damage.', $character->getName(), $enemyEffectiveDamage);
-                $this->sendArenaMessage($arena, $message);
+                $this->combatLog(sprintf('%s received %d damage.', $character->getName(), $enemyEffectiveDamage));
                 $character->setCurrentHealth(max(0, $characterCurrentHealth - $enemyEffectiveDamage));
 
                 if ($enemy->getCurrentHealth() <= 0) {
-                    $message = sprintf('%s perished.', $character->getName());
-                    $this->sendArenaMessage($arena, $message);
+                    $this->combatLog(sprintf('%s perished.', $character->getName()));
                 }
             }
 
@@ -65,16 +66,13 @@ class CombatHandler
                 $characterEffectiveDamage = min($enemyCurrentHealth, $characterDamage);
 
                 // apply damage
-                $message = sprintf('%s dealt %d damage.', $character->getName(), $characterEffectiveDamage);
-                $this->sendArenaMessage($arena, $message);
+                $this->combatLog(sprintf('%s dealt %d damage.', $character->getName(), $characterEffectiveDamage));
                 $enemy->setCurrentHealth($enemyCurrentHealth - $characterEffectiveDamage);
 
                 if ($enemy->getCurrentHealth() <= 0) {
-                    $this->sendArenaMessage($arena, 'Enemy perished.');
+                    $this->combatLog('Enemy perished.');
                 }
             }
-
-            break 1;
         }
 
         $currentLevel++;
@@ -83,9 +81,14 @@ class CombatHandler
                 $character->setCurrentArena(null);
             }
             $arena->setActive(false);
-            $this->sendArenaMessage($arena, sprintf('Arena %s is finished!', $arena->getUuid()));
         } else {
             $arena->setCurrentLevel($currentLevel);
+        }
+
+        // state update
+        $this->sendCombatLog($arena);
+        foreach ($arena->getCharacters() as $character) {
+            $this->sendCharacterState($character);
         }
     }
 
@@ -143,17 +146,25 @@ class CombatHandler
         return $enemies;
     }
 
-    private function sendCharacterMessage(Character $character, string $message): void
+    private function sendCharacterState(Character $character): void
     {
-        $this->broadcast->publish('channel.' . $character->getUser()->getUuid(), $message);
+        if ($character->getUser() !== null) {
+            $this->deferredBroadcast->sendToUser($character->getUser(), 'character', $character);
+        }
     }
 
-    private function sendArenaMessage(Arena $arena, string $message): void
+    private function sendCombatLog(Arena $arena): void
     {
         foreach ($arena->getCharacters() as $character) {
             if ($character->getUser() !== null) {
-                $this->sendCharacterMessage($character, $message);
+                $this->deferredBroadcast->sendToUser($character->getUser(), 'combat_log', $this->combatLog);
             }
         }
+        $this->combatLog = [];
+    }
+
+    private function combatLog(string $message): void
+    {
+        $this->combatLog[] = $message;
     }
 }

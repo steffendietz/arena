@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Database;
 
 use App\Database\Mapper\UuidMapper;
+use App\Interfaces\IdentifiableInterface;
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Relation\BelongsTo;
@@ -15,7 +16,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
 
 #[Entity(mapper: UuidMapper::class)]
-class Character implements JsonSerializable
+class Character implements JsonSerializable, IdentifiableInterface
 {
     #[Column(type: 'string(36)', primary: true)]
     protected string $uuid;
@@ -38,6 +39,11 @@ class Character implements JsonSerializable
     public function __construct(?User $user = null)
     {
         $this->user = $user;
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->getUuid();
     }
 
     public function getUuid(): string
@@ -95,7 +101,13 @@ class Character implements JsonSerializable
         return $this->currentArena;
     }
 
-    #[ArrayShape(['id' => "string", 'name' => "string", 'health'=>"int", 'isSearching' => "bool", 'isFighting' => "bool"])]
+    #[ArrayShape([
+        'id' => "string",
+        'name' => "string",
+        'health' => "int",
+        'isSearching' => "bool",
+        'isFighting' => "bool"
+    ])]
     public function jsonSerialize(): array
     {
         return [

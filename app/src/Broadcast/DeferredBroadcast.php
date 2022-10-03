@@ -3,6 +3,7 @@
 namespace App\Broadcast;
 
 use App\Database\User;
+use App\Interfaces\IdentifiableInterface;
 use JsonSerializable;
 use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
@@ -16,19 +17,32 @@ class DeferredBroadcast
         $this->broadcast = $broadcast;
     }
 
-    public function sendToUser(User $user, string $namespace, JsonSerializable|string $payload): void
+    public function sendToUser(User $user, string $namespace, JsonSerializable|array|string $payload): void
     {
-        $this->broadcast->publish('channel.' . $user->getUuid(), json_encode([
-            $namespace => $payload,
-        ]));
+        $this->broadcast->publish(
+            'channel.' . $user->getUuid(),
+            json_encode([
+                $namespace => $payload,
+            ])
+        );
     }
 
-    public function sendToUserDeferred(User $user, string $namespace, JsonSerializable|string $payload): void
+    public function sendToUserDeferred(User $user, string $namespace, JsonSerializable|array|string $payload): void
     {
-        if ($payload instanceof JsonSerializable) {
-            $payload = json_encode($payload);
+        if ($payload instanceof IdentifiableInterface) {
+            $this->deferredMessages[$user->getUuid()][$namespace][$payload->getIdentifier()] = $payload;
+        } elseif (is_array($payload)) {
+            if (isset($this->deferredMessages[$user->getUuid()][$namespace])) {
+                $this->deferredMessages[$user->getUuid()][$namespace] = array_merge(
+                    $this->deferredMessages[$user->getUuid()][$namespace],
+                    $payload
+                );
+            } else {
+                $this->deferredMessages[$user->getUuid()][$namespace] = $payload;
+            }
+        } else {
+            $this->deferredMessages[$user->getUuid()][$namespace][] = $payload;
         }
-        $this->deferredMessages[$user->getUuid()][$namespace][] = json_decode($payload, true);
     }
 
     public function sendDeferredMessages(): void

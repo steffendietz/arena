@@ -10,12 +10,29 @@ use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Relation\ManyToMany;
 use Cycle\ORM\Collection\Pivoted\PivotedCollection;
+use Cycle\ORM\Entity\Behavior;
+use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 
 #[Entity(mapper: UuidMapper::class, repository: ArenaRepository::class)]
+#[Behavior\CreatedAt(
+    field: 'createdAt',   // Required. By default 'createdAt'
+    column: 'created_at'  // Optional. By default 'null'. If not set, will be used information from property declaration.
+)]
+#[Behavior\UpdatedAt(
+    field: 'updatedAt',   // Required. By default 'updatedAt'
+    column: 'updated_at'  // Optional. By default 'null'. If not set, will be used information from property declaration.
+)]
 class Arena
 {
     #[Column(type: 'string(36)', primary: true)]
     protected string $uuid;
+
+    #[Column(type: 'datetime')]
+    private DateTimeImmutable $createdAt;
+
+    #[Column(type: 'datetime', nullable: true)]
+    private ?DateTimeImmutable $updatedAt = null;
 
     #[Column(type: 'boolean')]
     protected bool $active = true;
@@ -40,9 +57,9 @@ class Arena
     }
 
     /**
-     * @return Character[]
+     * @return Collection<Character>
      */
-    public function getCharacters()
+    public function getCharacters(): Collection
     {
         return $this->characters;
     }
@@ -52,7 +69,7 @@ class Arena
         $this->active = $active;
     }
 
-    public function  isActive(): bool
+    public function isActive(): bool
     {
         return $this->active;
     }
