@@ -28,7 +28,7 @@ service:
         - RR_TICKER: "TICK"
 
 http:
-  address: 0.0.0.0:8181
+  address: 0.0.0.0:8080
   middleware: [ "gzip", "static", "websockets" ]
   static:
     dir: "public"
@@ -49,6 +49,11 @@ reload:
   patterns: [ ".php" ]
   services:
     http:
+      dirs: [ "." ]
+      recursive: true
+      ignore: [ "vendor", "runtime" ]
+      patterns: [ ".php" ]
+    service:
       dirs: [ "." ]
       recursive: true
       ignore: [ "vendor", "runtime" ]

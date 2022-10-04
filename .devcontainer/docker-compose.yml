@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 
 services:
   app:
@@ -10,8 +10,8 @@ services:
         NODE_VERSION: "lts/*"
     volumes:
       - ..:/workspace:cached
-      - ../..:/usr/local/share/app-scripts:cached
     user: vscode
+    command: "tail -f /dev/null"
   mariadb:
     image: mariadb:10
     environment:

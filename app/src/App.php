@@ -119,6 +119,7 @@ class App extends Kernel
         Bootloader\RoutesBootloader::class,
 
         Bootloader\TopicsBootloader::class,
+        Bootloader\DeferredBroadcastBootloader::class,
         Bootloader\UserBootloader::class,
 
         // fast code prototyping

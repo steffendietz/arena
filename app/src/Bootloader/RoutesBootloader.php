@@ -18,6 +18,7 @@ use Spiral\Router\Route;
 use Spiral\Router\RouteInterface;
 use Spiral\Router\RouterInterface;
 use Spiral\Router\Target\Controller;
+use Spiral\Router\Target\Group;
 use Spiral\Router\Target\Namespaced;
 
 class RoutesBootloader extends Bootloader
@@ -31,8 +32,12 @@ class RoutesBootloader extends Bootloader
     {
         // named routes
         $router->setRoute('html', $this->homeRoute());
-        $router->setRoute('character', $this->characterGenerateRoute());
-        $router->setRoute('searchmatch', $this->characterSearchMathRoute());
+        $router->setRoute('characterGenerate', $this->characterGenerateRoute());
+
+        // api
+        $this->apiRoute($router, [
+            'character' => CharacterController::class,
+        ]);
 
         // fallback (default) route
         $router->setDefault($this->defaultRoute());
@@ -46,18 +51,6 @@ class RoutesBootloader extends Bootloader
         );
     }
 
-    protected function characterSearchMathRoute(): RouteInterface
-    {
-        $characterGenerateRoute = new Route(
-            '/character/search-match/<characterUuid>',
-            new Controller(CharacterController::class)
-        );
-
-        return $characterGenerateRoute->withDefaults([
-            'action' => 'toggleMatchSearch'
-        ]);
-    }
-
     protected function characterGenerateRoute(): RouteInterface
     {
         $characterGenerateRoute = new Route(
@@ -69,6 +62,35 @@ class RoutesBootloader extends Bootloader
             'action' => 'generate',
             'name' => 'HelloWorldCharacter'
         ]);
+    }
+
+    protected function apiRoute(RouterInterface $router, array $groupControllers): void
+    {
+        $apiList = new Route('/v1/<controller>', new Group($groupControllers, Controller::RESTFUL));
+        $router->setRoute(
+            'api.list',
+            $apiList->withVerbs('GET')->withDefaults(['action' => 'list'])
+        );
+
+        $api = new Route('/v1/<controller>/<id>', new Group($groupControllers, Controller::RESTFUL));
+        $router->setRoute(
+            'api.get',
+            $api->withVerbs('GET')->withDefaults(['action' => 'load'])
+        );
+        $router->setRoute(
+            'api.store',
+            $api->withVerbs('POST')->withDefaults(['action' => 'store'])
+        );
+        $router->setRoute(
+            'api.delete',
+            $api->withVerbs('DELETE')->withDefaults(['action' => 'delete'])
+        );
+
+        $apiAction = new Route('/v1/<controller>/<action>/<id>', new Group($groupControllers, Controller::RESTFUL));
+        $router->setRoute(
+            'api.action',
+            $apiAction->withVerbs('POST')
+        );
     }
 
     /**

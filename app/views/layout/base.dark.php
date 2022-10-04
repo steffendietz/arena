@@ -24,6 +24,7 @@
             </div>
         </div>
     </div>
+    <div id="app"></div>
     <stack:collect name="scripts" level="1" />
 </body>
 <hidden>${context}</hidden>

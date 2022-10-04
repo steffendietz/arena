@@ -15,14 +15,14 @@ class CharacterController
 {
     use PrototypeTrait;
 
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function generate(string $name)
+    public function generate(string $name): string
     {
         if (($user = $this->auth->getActor()) === null) {
             throw new ForbiddenException();
@@ -39,6 +39,28 @@ class CharacterController
 
     public function list()
     {
+        return $this->views->render('character/list.dark.php', [
+            'characters' => $this->getCharacters(),
+        ]);
+    }
+
+    public function getList()
+    {
+        $characters = [];
+        foreach ($this->getCharacters() as $character) {
+            $characters[] = $character;
+        }
+        return $this->response->json(
+            $characters,
+            200
+        );
+    }
+
+    /**
+     * @return Character[]
+     */
+    private function getCharacters(): array
+    {
         if (($user = $this->auth->getActor()) === null) {
             throw new ForbiddenException();
         }
@@ -46,19 +68,15 @@ class CharacterController
         /** @var Repository $characterRepo */
         $characterRepo = $this->orm->getRepository(Character::class);
 
-        $characters = $characterRepo
+        return $characterRepo
             ->select()
             ->load('matchSearch')
             ->with('user')
             ->where('user.uuid', $user->getUuid())
             ->fetchAll();
-
-        return $this->views->render('character/list.dark.php', [
-            'characters' => $characters
-        ]);
     }
 
-    public function toggleMatchSearch(string $characterUuid)
+    public function postToggleMatchSearch(string $id)
     {
         if (($user = $this->auth->getActor()) === null) {
             throw new ForbiddenException();
@@ -73,21 +91,22 @@ class CharacterController
             ->load('matchSearch')
             ->with('user')
             ->where('user.uuid', $user->getUuid())
-            ->andWhere('uuid', $characterUuid)
+            ->andWhere('uuid', $id)
             ->fetchOne();
 
         if ($character !== null) {
             if ($character->isMatchSearching()) {
-                $this->entityManager->delete($character->getMatchSearch());
+                $character->setMatchSearch(null);
             } else {
-                $this->entityManager->persist(new MatchSearch($character));
+                $character->setMatchSearch(new MatchSearch($character));
             }
+            $this->entityManager->persistState($character);
             $this->entityManager->run();
         }
 
-        return $this->response->redirect(
-            $this->router->uri('character:list'),
-            303
+        return $this->response->json(
+            $character,
+            200
         );
     }
 }

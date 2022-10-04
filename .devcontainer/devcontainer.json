@@ -2,16 +2,19 @@
 	"name": "spiral",
 	"dockerComposeFile":["docker-compose.yml"],
 	"service": "app",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "latest"
+		}
+	},
 	"extensions": [
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
-		"mrmlnc.vscode-apache"
+		"mrmlnc.vscode-apache",
+		"svelte.svelte-vscode"
 	],
 	"forwardPorts": [
-		2112,
-		8080,
-		8181,
-		8282,
+		8080
 	],
 	"workspaceFolder": "/workspace"
 }

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Database;
 
 use App\Repository\MatchSearchRepository;
-use Cycle\Annotated\Annotation\Relation\Inverse;
-use Cycle\Annotated\Annotation\Relation\BelongsTo;
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use DateTimeInterface;
+use Cycle\Annotated\Annotation\Relation\BelongsTo;
+use Cycle\Annotated\Annotation\Relation\Inverse;
 use DateTimeImmutable;
+use DateTimeInterface;
 
 #[Entity(repository: MatchSearchRepository::class)]
 class MatchSearch
@@ -22,12 +22,17 @@ class MatchSearch
     protected DateTimeInterface $started;
 
     #[BelongsTo(target: Character::class, inverse: new Inverse('matchSearch', 'hasOne'))]
-    protected $character;
+    protected Character $character;
 
     public function __construct(Character $character)
     {
         $this->started = new DateTimeImmutable();
         $this->character = $character;
+    }
+
+    public function getStarted(): DateTimeImmutable|DateTimeInterface
+    {
+        return $this->started;
     }
 
     public function getCharacter(): Character

@@ -1,29 +1,33 @@
-# global ARGs
-ARG VARIANT="7"
-ARG NODE_VERSION="lts/*"
+# [Choice] PHP version (use -bullseye variants on local arm64/Apple Silicon): 8-apache-bullseye, 8.1-apache-bullseye, 8.0-apache-bullseye, 7-apache-bullseye, 7.4-apache-bullseye, 8-apache-buster, 8.1-apache-buster, 8.0-apache-buster, 7-apache-buster, 7.4-apache-buster
+ARG VARIANT=7-apache-bullseye
+FROM php:${VARIANT}
 
-#FROM golang:1.15-alpine AS spiralbuilder
-#WORKDIR /go/src/github.com/steffendietz/arena/
-#COPY main.go go.mod go.sum ./
-#COPY composite_packages/ ./composite_packages/
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+ENV USERNAME ${USERNAME}
+ENV USER_UID ${USER_UID}
+ENV USER_GID ${USER_GID}
 
-# creating cachable layer of downloaded modules
-#RUN go mod download
-# compile statically
-#RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o spiral-build .
-
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/main/containers/php
-#ARG VARIANT
-FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}
+# Install xdebug
+RUN yes | pecl install xdebug \
+    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.client_port = 9000" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && rm -rf /tmp/pear
 
 # activate php sockets extension
 RUN docker-php-ext-install sockets pdo_mysql
 
-#COPY --from=spiralbuilder /go/src/github.com/steffendietz/arena/spiral-build /spiral/
+# Install composer
+RUN curl -sSL https://getcomposer.org/installer | php \
+    && chmod +x composer.phar \
+    && mv composer.phar /usr/local/bin/composer
 
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+# Create User
+RUN groupadd --gid ${USER_GID} ${USERNAME} \
+    && useradd -s /bin/bash --uid ${USER_UID} --gid ${USERNAME} -m ${USERNAME}
 
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1\
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends git unzip

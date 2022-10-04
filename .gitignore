@@ -1,9 +1,32 @@
-.idea
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# vendor and build stuff
 vendor
 node_modules
+dist
+dist-ssr
 runtime
 rr*
 spiral*
 .env
 .phpunit.result.cache
 app.db
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
