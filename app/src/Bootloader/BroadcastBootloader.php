@@ -27,9 +27,7 @@ final class BroadcastBootloader extends Bootloader
         $container->bind(BroadcastInterface::class, Broadcast::class);
         $container->bindSingleton(
             Broadcast::class,
-            function (RPCInterface $rpc): Broadcast {
-                return new Broadcast($rpc);
-            }
+            fn(RPCInterface $rpc): Broadcast => new Broadcast($rpc)
         );
     }
 }

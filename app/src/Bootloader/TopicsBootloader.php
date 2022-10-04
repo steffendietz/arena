@@ -16,11 +16,7 @@ class TopicsBootloader extends Bootloader
 
     public function boot(WebsocketsBootloader $ws): void
     {
-        $ws->authorizeTopic('channel', function (): bool {
-            return true;
-        });
-        $ws->authorizeTopic('channel.{uuid}', function ($uuid, AuthContextInterface $authContext): bool {
-            return $authContext->getActor()?->getUuid() === $uuid;
-        });
+        $ws->authorizeTopic('channel', fn(): bool => true);
+        $ws->authorizeTopic('channel.{uuid}', fn($uuid, AuthContextInterface $authContext): bool => $authContext->getActor()?->getUuid() === $uuid);
     }
 }

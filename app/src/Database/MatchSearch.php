@@ -21,13 +21,11 @@ class MatchSearch
     #[Column(type: 'datetime')]
     protected DateTimeInterface $started;
 
-    #[BelongsTo(target: Character::class, inverse: new Inverse('matchSearch', 'hasOne'))]
-    protected Character $character;
-
-    public function __construct(Character $character)
-    {
+    public function __construct(
+        #[BelongsTo(target: Character::class, inverse: new Inverse('matchSearch', 'hasOne'))]
+        protected Character $character
+    ) {
         $this->started = new DateTimeImmutable();
-        $this->character = $character;
     }
 
     public function getStarted(): DateTimeImmutable|DateTimeInterface

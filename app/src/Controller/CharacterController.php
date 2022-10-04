@@ -15,11 +15,9 @@ class CharacterController
 {
     use PrototypeTrait;
 
-    protected EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        protected EntityManagerInterface $entityManager
+    ) {
     }
 
     public function generate(string $name): string
@@ -86,7 +84,7 @@ class CharacterController
         $characterRepo = $this->orm->getRepository(Character::class);
 
         /** @var Character $character */
-        $character =  $characterRepo
+        $character = $characterRepo
             ->select()
             ->load('matchSearch')
             ->with('user')

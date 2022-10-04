@@ -10,17 +10,16 @@ use Doctrine\Common\Collections\Collection;
 class CombatHandler
 {
 
-    const DEFAULT_HEALTH = 100;
+    final const DEFAULT_HEALTH = 100;
 
     /**
      * @var string[]
      */
     private array $combatLog = [];
-    private DeferredBroadcast $deferredBroadcast;
 
-    public function __construct(DeferredBroadcast $deferredBroadcast)
-    {
-        $this->deferredBroadcast = $deferredBroadcast;
+    public function __construct(
+        private readonly DeferredBroadcast $deferredBroadcast
+    ) {
     }
 
     public function bootstrap(Arena $arena): void
@@ -44,7 +43,7 @@ class CombatHandler
                     break 2;
                 }
                 $characterCurrentHealth = $character->getCurrentHealth();
-                $enemyDamage = rand($currentLevel + 1, 3 * ($currentLevel + 1));
+                $enemyDamage = random_int($currentLevel + 1, 3 * ($currentLevel + 1));
                 $enemyEffectiveDamage = min($characterCurrentHealth, $enemyDamage);
 
                 // apply damage
@@ -62,7 +61,7 @@ class CombatHandler
                     break 2;
                 }
                 $enemyCurrentHealth = $enemy->getCurrentHealth();
-                $characterDamage = rand(5, 15);
+                $characterDamage = random_int(5, 15);
                 $characterEffectiveDamage = min($enemyCurrentHealth, $characterDamage);
 
                 // apply damage
@@ -136,7 +135,7 @@ class CombatHandler
     private function spawnEnemies(Arena $arena): array
     {
         $currentLevel = $arena->getCurrentLevel() + 1;
-        $numberOfEnemies = rand($currentLevel, $arena->getLevels());
+        $numberOfEnemies = random_int($currentLevel, $arena->getLevels());
 
         $enemies = [];
         for ($i = 0; $i < $numberOfEnemies; $i++) {

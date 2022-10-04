@@ -29,7 +29,7 @@ class Arena
     protected string $uuid;
 
     #[Column(type: 'datetime')]
-    private DateTimeImmutable $createdAt;
+    private readonly DateTimeImmutable $createdAt;
 
     #[Column(type: 'datetime', nullable: true)]
     private ?DateTimeImmutable $updatedAt = null;

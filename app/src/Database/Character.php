@@ -30,15 +30,13 @@ class Character implements JsonSerializable, IdentifiableInterface
     #[HasOne(target: MatchSearch::class, nullable: true, load: 'eager')]
     protected ?MatchSearch $matchSearch = null;
 
-    #[BelongsTo(target: User::class, nullable: true, inverse: new Inverse('characters', 'hasMany'))]
-    protected ?User $user;
-
     #[RefersTo(target: Arena::class, nullable: true)]
     protected ?Arena $currentArena = null;
 
-    public function __construct(?User $user = null)
-    {
-        $this->user = $user;
+    public function __construct(
+        #[BelongsTo(target: User::class, nullable: true, inverse: new Inverse('characters', 'hasMany'))]
+        protected ?User $user = null
+    ) {
     }
 
     public function getIdentifier(): string

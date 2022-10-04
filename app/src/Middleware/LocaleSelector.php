@@ -20,29 +20,16 @@ use Spiral\Translator\Translator;
 class LocaleSelector implements MiddlewareInterface
 {
     /**
-     * @var Translator
-     */
-    private $translator;
-
-    /**
      * @var string[]
      */
-    private $availableLocales;
+    private readonly array $availableLocales;
 
-    /**
-     * @param Translator $translator
-     */
-    public function __construct(Translator $translator)
-    {
-        $this->translator = $translator;
+    public function __construct(
+        private readonly Translator $translator
+    ) {
         $this->availableLocales = $this->translator->getCatalogueManager()->getLocales();
     }
 
-    /**
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $defaultLocale = $this->translator->getLocale();
@@ -63,15 +50,11 @@ class LocaleSelector implements MiddlewareInterface
         }
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @return \Generator
-     */
     public function fetchLocales(ServerRequestInterface $request): \Generator
     {
         $header = $request->getHeaderLine('accept-language');
         foreach (explode(',', $header) as $value) {
-            if (strpos($value, ';') !== false) {
+            if (str_contains($value, ';')) {
                 yield substr($value, 0, strpos($value, ';'));
             }
 

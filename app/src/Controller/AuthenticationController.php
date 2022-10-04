@@ -44,7 +44,7 @@ class AuthenticationController
         $user = $this->users->findOne(['username' => $login->getField('username')]);
         if (
             $user === null
-            || !password_verify($login->getField('password'), $user->password)
+            || !password_verify((string) $login->getField('password'), $user->password)
         ) {
             return [
                 'status' => 400,

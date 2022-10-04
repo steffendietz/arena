@@ -14,9 +14,7 @@ final class DeferredBroadcastBootloader extends Bootloader
     {
         $container->bindSingleton(
             DeferredBroadcast::class,
-            function (BroadcastInterface $broadcast): DeferredBroadcast {
-                return new DeferredBroadcast($broadcast);
-            }
+            fn(BroadcastInterface $broadcast): DeferredBroadcast => new DeferredBroadcast($broadcast)
         );
 
         $finalizer->addFinalizer(function () use ($container) {

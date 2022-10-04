@@ -10,9 +10,6 @@ class HomeController
 {
     use PrototypeTrait;
 
-    /**
-     * @return string
-     */
     public function index(): string
     {
         return $this->views->render('home.dark.php');

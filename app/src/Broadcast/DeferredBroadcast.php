@@ -9,21 +9,18 @@ use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 class DeferredBroadcast
 {
-    private BroadcastInterface $broadcast;
     private array $deferredMessages = [];
 
-    public function __construct(BroadcastInterface $broadcast)
-    {
-        $this->broadcast = $broadcast;
+    public function __construct(
+        private readonly BroadcastInterface $broadcast
+    ) {
     }
 
     public function sendToUser(User $user, string $namespace, JsonSerializable|array|string $payload): void
     {
         $this->broadcast->publish(
             'channel.' . $user->getUuid(),
-            json_encode([
-                $namespace => $payload,
-            ])
+            json_encode([$namespace => $payload], JSON_THROW_ON_ERROR)
         );
     }
 
@@ -48,7 +45,10 @@ class DeferredBroadcast
     public function sendDeferredMessages(): void
     {
         foreach ($this->deferredMessages as $userUuid => $payload) {
-            $this->broadcast->publish('channel.' . $userUuid, json_encode($payload));
+            $this->broadcast->publish(
+                'channel.' . $userUuid,
+                json_encode($payload, JSON_THROW_ON_ERROR)
+            );
         }
         $this->deferredMessages = [];
     }
