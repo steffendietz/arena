@@ -4,17 +4,17 @@
 	"service": "app",
 	"features": {
 		"ghcr.io/devcontainers/features/node:1": {
-            "version": "latest"
-        }
+			"version": "latest"
+		}
 	},
 	"extensions": [
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
 		"mrmlnc.vscode-apache",
-		"svelte.svelte-vscode",
+		"svelte.svelte-vscode"
 	],
 	"forwardPorts": [
-		8080,
+		8080
 	],
 	"workspaceFolder": "/workspace"
 }
