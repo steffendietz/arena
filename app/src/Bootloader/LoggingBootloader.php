@@ -6,7 +6,6 @@ namespace App\Bootloader;
 
 use Monolog\Logger;
 use Spiral\Boot\Bootloader\Bootloader;
-use Spiral\Http\Middleware\ErrorHandlerMiddleware;
 use Spiral\Monolog\Bootloader\MonologBootloader;
 use Spiral\Monolog\Config\MonologConfig;
 

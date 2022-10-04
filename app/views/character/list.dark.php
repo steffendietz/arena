@@ -11,7 +11,7 @@
         <a href="@route('searchmatch', ['characterUuid' => $character->getUuid()])">
             {{ $character->getName() }}
         </a>
-        <?php if($character->isMatchSearching()): ?>
+        <?php if ($character->isMatchSearching()) : ?>
             <span>searching</span>
         <?php endif; ?>
     </div>

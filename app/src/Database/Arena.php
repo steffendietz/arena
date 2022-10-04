@@ -15,14 +15,8 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 
 #[Entity(mapper: UuidMapper::class, repository: ArenaRepository::class)]
-#[Behavior\CreatedAt(
-    field: 'createdAt',   // Required. By default 'createdAt'
-    column: 'created_at'  // Optional. By default 'null'. If not set, will be used information from property declaration.
-)]
-#[Behavior\UpdatedAt(
-    field: 'updatedAt',   // Required. By default 'updatedAt'
-    column: 'updated_at'  // Optional. By default 'null'. If not set, will be used information from property declaration.
-)]
+#[Behavior\CreatedAt(field: 'createdAt', column: 'created_at')]
+#[Behavior\UpdatedAt(field: 'updatedAt', column: 'updated_at')]
 class Arena
 {
     #[Column(type: 'string(36)', primary: true)]

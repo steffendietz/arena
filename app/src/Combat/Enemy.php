@@ -4,7 +4,6 @@ namespace App\Combat;
 
 class Enemy
 {
-
     public function __construct(
         protected int $currentHealth
     ) {
