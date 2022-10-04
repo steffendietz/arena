@@ -8,13 +8,13 @@ use App\Repository\UserRepository;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Bootloader\Auth\AuthBootloader;
 
-class UserBootloader extends Bootloader
+final class UserBootloader extends Bootloader
 {
     protected const DEPENDENCIES = [
         AuthBootloader::class
     ];
 
-    public function boot(AuthBootloader $auth): void
+    public function init(AuthBootloader $auth): void
     {
         $auth->addActorProvider(UserRepository::class);
     }

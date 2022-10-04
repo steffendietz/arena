@@ -5,12 +5,12 @@ namespace App\Bootloader;
 use App\Broadcast\DeferredBroadcast;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Boot\FinalizerInterface;
+use Spiral\Broadcasting\BroadcastInterface;
 use Spiral\Core\Container;
-use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 
 final class DeferredBroadcastBootloader extends Bootloader
 {
-    public function boot(Container $container, FinalizerInterface $finalizer): void
+    public function init(Container $container, FinalizerInterface $finalizer): void
     {
         $container->bindSingleton(
             DeferredBroadcast::class,

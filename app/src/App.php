@@ -111,15 +111,16 @@ class App extends Kernel
      * Application specific services and extensions.
      */
     protected const APP = [
+        Bootloader\ValidationBootloader::class,
         Bootloader\LocaleSelectorBootloader::class,
         Bootloader\RoutesBootloader::class,
 
-        //Bootloader\TopicsBootloader::class,
-        //Bootloader\DeferredBroadcastBootloader::class,
+        Bootloader\TopicsBootloader::class,
+        Bootloader\DeferredBroadcastBootloader::class,
         Bootloader\UserBootloader::class,
 
         // Additional dispatchers
-        //Bootloader\TickerBootloader::class,
+        Bootloader\TickerBootloader::class,
 
         // fast code prototyping
         Prototype\PrototypeBootloader::class,

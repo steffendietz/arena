@@ -6,17 +6,21 @@ namespace App\Bootloader;
 
 use Spiral\Auth\AuthContextInterface;
 use Spiral\Boot\Bootloader\Bootloader;
-use Spiral\Bootloader\Http\WebsocketsBootloader;
+use Spiral\Broadcasting\Bootloader\BroadcastingBootloader;
+use Spiral\Broadcasting\TopicRegistryInterface;
 
-class TopicsBootloader extends Bootloader
+final class TopicsBootloader extends Bootloader
 {
     protected const DEPENDENCIES = [
-        WebsocketsBootloader::class,
+        BroadcastingBootloader::class,
     ];
 
-    public function boot(WebsocketsBootloader $ws): void
+    public function init(TopicRegistryInterface $topicRegistry): void
     {
-        $ws->authorizeTopic('channel', fn(): bool => true);
-        $ws->authorizeTopic('channel.{uuid}', fn($uuid, AuthContextInterface $authContext): bool => $authContext->getActor()?->getUuid() === $uuid);
+        $topicRegistry->register('channel', fn(): bool => true);
+        $topicRegistry->register(
+            'channel.{uuid}',
+            fn($uuid, AuthContextInterface $authContext): bool => $authContext->getActor()?->getUuid() === $uuid
+        );
     }
 }

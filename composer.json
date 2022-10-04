@@ -20,7 +20,8 @@
         "phpstan/phpstan": "^1.8",
         "phpunit/phpunit": "^9.5",
         "spiral-packages/ignition-bridge": "^1.0",
-        "spiral/testing": "^2.1"
+        "spiral/testing": "^2.1",
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "scripts": {
         "post-create-project-cmd": [
