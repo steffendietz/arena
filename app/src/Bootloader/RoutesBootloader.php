@@ -23,11 +23,6 @@ use Spiral\Router\Target\Namespaced;
 
 class RoutesBootloader extends Bootloader
 {
-    /**
-     * Bootloader execute method.
-     *
-     * @param RouterInterface $router
-     */
     public function boot(RouterInterface $router): void
     {
         // named routes
@@ -95,8 +90,6 @@ class RoutesBootloader extends Bootloader
 
     /**
      * Default route points to namespace of controllers.
-     *
-     * @return RouteInterface
      */
     protected function defaultRoute(): RouteInterface
     {
@@ -108,7 +101,7 @@ class RoutesBootloader extends Bootloader
 
         return $route->withDefaults([
             'controller' => 'home',
-            'action'     => 'index'
+            'action' => 'index'
         ]);
     }
 }

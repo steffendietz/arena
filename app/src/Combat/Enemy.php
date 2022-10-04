@@ -5,11 +5,9 @@ namespace App\Combat;
 class Enemy
 {
 
-    protected $currentHealth;
-
-    public function __construct(int $initialHealth)
-    {
-        $this->currentHealth = $initialHealth;
+    public function __construct(
+        protected int $currentHealth
+    ) {
     }
 
     public function setCurrentHealth(int $currentHealth): void

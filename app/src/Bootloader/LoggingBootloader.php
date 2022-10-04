@@ -19,11 +19,6 @@ use Spiral\Monolog\LogFactory;
 
 class LoggingBootloader extends Bootloader
 {
-    /**
-     * Bootloader execute method.
-     *
-     * @param MonologBootloader $monolog
-     */
     public function boot(MonologBootloader $monolog): void
     {
         // http level errors

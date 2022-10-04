@@ -22,34 +22,18 @@ use Spiral\Boot\FinalizerInterface;
 class TickerDispatcher implements DispatcherInterface
 {
 
-    const CHARACTERS_NEEDED_FOR_MATCH = 3;
-    const TICKS_PER_MINUTE = 15;
-
-    private ORMInterface $orm;
-    private LoggerInterface $logger;
-    private EntityManagerInterface $entityManager;
-    private EnvironmentInterface $env;
-    private DeferredBroadcast $deferredBroadcast;
-    private FinalizerInterface $finalizer;
-
-    private CombatHandler $combatHandler;
+    final const CHARACTERS_NEEDED_FOR_MATCH = 3;
+    final const TICKS_PER_MINUTE = 15;
 
     public function __construct(
-        ORMInterface $orm,
-        LoggerInterface $logger,
-        EntityManagerInterface $entityManager,
-        EnvironmentInterface $env,
-        DeferredBroadcast $deferredBroadcast,
-        FinalizerInterface $finalizer,
-        CombatHandler $combatHandler
+        private readonly ORMInterface $orm,
+        private readonly LoggerInterface $logger,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EnvironmentInterface $env,
+        private readonly DeferredBroadcast $deferredBroadcast,
+        private readonly FinalizerInterface $finalizer,
+        private readonly CombatHandler $combatHandler
     ) {
-        $this->orm = $orm;
-        $this->logger = $logger;
-        $this->entityManager = $entityManager;
-        $this->env = $env;
-        $this->deferredBroadcast = $deferredBroadcast;
-        $this->finalizer = $finalizer;
-        $this->combatHandler = $combatHandler;
     }
 
     public function canServe(): bool
@@ -83,7 +67,11 @@ class TickerDispatcher implements DispatcherInterface
                     } else {
                         $this->logger->info(sprintf('Only found %d characters searching for match.', count($chunk)));
                         foreach ($chunk as $matchSearch) {
-                            $this->deferredBroadcast->sendToUser($matchSearch->getCharacter()->getUser(), 'general', 'Still searching!');
+                            $this->deferredBroadcast->sendToUser(
+                                $matchSearch->getCharacter()->getUser(),
+                                'general',
+                                'Still searching!'
+                            );
                         }
                     }
                 }
@@ -107,7 +95,6 @@ class TickerDispatcher implements DispatcherInterface
 
     /**
      * @param MatchSearch[] $matchSearches
-     * @return void
      */
     private function createMatch(array $matchSearches): void
     {

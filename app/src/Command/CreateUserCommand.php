@@ -50,7 +50,7 @@ class CreateUserCommand extends Command
         $u = new User();
         $u->name = 'Generated';
         $u->username = $this->argument('username');
-        $u->password = password_hash($password, PASSWORD_DEFAULT);
+        $u->password = password_hash((string) $password, PASSWORD_DEFAULT);
 
         $entityManager->persist($u)->run();
     }
