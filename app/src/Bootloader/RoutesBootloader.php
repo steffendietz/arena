@@ -1,12 +1,5 @@
 <?php
 
-/**
- * This file is part of Spiral package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace App\Bootloader;
@@ -21,7 +14,7 @@ use Spiral\Router\Target\Controller;
 use Spiral\Router\Target\Group;
 use Spiral\Router\Target\Namespaced;
 
-class RoutesBootloader extends Bootloader
+final class RoutesBootloader extends Bootloader
 {
     public function boot(RouterInterface $router): void
     {

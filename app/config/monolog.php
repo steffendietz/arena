@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
+use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
+    /**
+     * Specify a default monolog handler
+     */
+    'default' => env('MONOLOG_DEFAULT_CHANNEL', 'default'),
 
     /**
      * Monolog supports the logging levels described by RFC 5424.
@@ -23,13 +28,13 @@ return [
             [
                 'class' => 'log.rotate',
                 'options' => [
-                    'filename' => directory('runtime').'logs/app.log',
+                    'filename' => directory('runtime') . 'logs/app.log',
                     'level' => Logger::DEBUG,
                 ],
             ],
         ],
         'stderr' => [
-            \Monolog\Handler\ErrorLogHandler::class,
+            ErrorLogHandler::class,
         ],
         'stdout' => [
             [
