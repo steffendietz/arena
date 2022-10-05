@@ -9,8 +9,7 @@ use Doctrine\Common\Collections\Collection;
 
 class CombatHandler
 {
-
-    final const DEFAULT_HEALTH = 100;
+    final public const DEFAULT_HEALTH = 100;
 
     /**
      * @var string[]

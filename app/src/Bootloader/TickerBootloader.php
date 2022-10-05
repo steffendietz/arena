@@ -7,10 +7,15 @@ namespace App\Bootloader;
 use App\Dispatcher\TickerDispatcher;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Boot\KernelInterface;
+use Spiral\Broadcasting\Bootloader\BroadcastingBootloader;
 
-class TickerBootloader extends Bootloader
+final class TickerBootloader extends Bootloader
 {
-    public function boot(KernelInterface $kernel, TickerDispatcher $ticker): void
+    protected const DEPENDENCIES = [
+        BroadcastingBootloader::class
+    ];
+
+    public function init(KernelInterface $kernel, TickerDispatcher $ticker): void
     {
         $kernel->addDispatcher($ticker);
     }

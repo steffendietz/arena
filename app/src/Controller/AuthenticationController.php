@@ -24,31 +24,22 @@ class AuthenticationController
         $this->users = $this->orm->getRepository('user');
     }
 
-
     public function index()
     {
         return $this->views->render('login.dark.php');
     }
 
-
     public function login(LoginRequest $login)
     {
-        if (!$login->isValid()) {
-            return [
-                'status' => 400,
-                'errors' => $login->getErrors()
-            ];
-        }
-
         /** @var User $user */
-        $user = $this->users->findOne(['username' => $login->getField('username')]);
+        $user = $this->users->findOne(['username' => $login->username]);
         if (
             $user === null
-            || !password_verify((string) $login->getField('password'), $user->password)
+            || !password_verify($login->password, $user->password)
         ) {
             return [
                 'status' => 400,
-                'error'  => 'No such user'
+                'error' => 'No such user'
             ];
         }
 

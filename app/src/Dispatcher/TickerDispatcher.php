@@ -21,9 +21,8 @@ use Spiral\Boot\FinalizerInterface;
 
 class TickerDispatcher implements DispatcherInterface
 {
-
-    final const CHARACTERS_NEEDED_FOR_MATCH = 3;
-    final const TICKS_PER_MINUTE = 15;
+    final public const CHARACTERS_NEEDED_FOR_MATCH = 3;
+    final public const TICKS_PER_MINUTE = 15;
 
     public function __construct(
         private readonly ORMInterface $orm,

@@ -5,7 +5,7 @@ namespace App\Broadcast;
 use App\Database\User;
 use App\Interfaces\IdentifiableInterface;
 use JsonSerializable;
-use Spiral\RoadRunner\Broadcast\BroadcastInterface;
+use Spiral\Broadcasting\BroadcastInterface;
 
 class DeferredBroadcast
 {
