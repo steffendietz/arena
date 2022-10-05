@@ -21,6 +21,7 @@ use Spiral\Scaffolder\Bootloader as Scaffolder;
 use Spiral\Stempler\Bootloader as Stempler;
 use Spiral\Tokenizer\Bootloader\TokenizerBootloader;
 use Spiral\Validation\Bootloader\ValidationBootloader;
+use Spiral\Validator\Bootloader\ValidatorBootloader;
 use Spiral\Views\Bootloader\ViewsBootloader;
 
 class App extends Kernel
@@ -59,6 +60,7 @@ class App extends Kernel
         ValidationBootloader::class,
         Framework\Security\FiltersBootloader::class,
         Framework\Security\GuardBootloader::class,
+        ValidatorBootloader::class,
 
         // HTTP extensions
         Nyholm\NyholmBootloader::class,
@@ -111,7 +113,6 @@ class App extends Kernel
      * Application specific services and extensions.
      */
     protected const APP = [
-        Bootloader\ValidationBootloader::class,
         Bootloader\LocaleSelectorBootloader::class,
         Bootloader\RoutesBootloader::class,
 
