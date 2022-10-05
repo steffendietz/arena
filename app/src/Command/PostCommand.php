@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use Spiral\Broadcasting\BroadcastInterface;
 use Spiral\Console\Command;
-use Spiral\RoadRunner\Broadcast\BroadcastInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
 class PostCommand extends Command

@@ -89,6 +89,7 @@ class App extends Kernel
         // Websockets (after Auth)
         BroadcastingBootloader::class,
         WebsocketsBootloader::class,
+        RoadRunnerBridge\BroadcastingBootloader::class,
 
         // Views and view translation
         ViewsBootloader::class,
@@ -116,7 +117,6 @@ class App extends Kernel
         Bootloader\LocaleSelectorBootloader::class,
         Bootloader\RoutesBootloader::class,
 
-        Bootloader\TopicsBootloader::class,
         Bootloader\DeferredBroadcastBootloader::class,
         Bootloader\UserBootloader::class,
 
